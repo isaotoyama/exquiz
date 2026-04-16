@@ -15,37 +15,54 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
   const [loading, setLoading] = useState(false);
 
   const completed = useMemo(() => Object.keys(answers).length, [answers]);
+  const [error, setError] = useState<string | null>(null);
 
   const submit = async () => {
-    setLoading(true);
-    try {
-      const payload: SubmissionPayload = {
-        profile,
-        locale,
-        answers,
-        submittedAt: new Date().toISOString()
-      };
+  setLoading(true);
+  setError(null);
 
-      const saveRes = await fetch('/api/submissions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const saveData = await saveRes.json();
-      setSummary(saveData.summary);
+  try {
+    const payload: SubmissionPayload = {
+      profile,
+      locale,
+      answers,
+      submittedAt: new Date().toISOString()
+    };
 
-      const simRes = await fetch('/api/search-similar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const simData = await simRes.json();
-      setSimilar(simData.matches ?? []);
-    } finally {
-      setLoading(false);
+    const saveRes = await fetch('/api/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!saveRes.ok) {
+      const text = await saveRes.text();
+      throw new Error(`Submit failed: ${saveRes.status} ${text}`);
     }
-  };
 
+    const saveData = await saveRes.json();
+    setSummary(saveData.summary);
+
+    const simRes = await fetch('/api/search-similar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!simRes.ok) {
+      const text = await simRes.text();
+      throw new Error(`Similarity search failed: ${simRes.status} ${text}`);
+    }
+
+    const simData = await simRes.json();
+    setSimilar(simData.matches ?? []);
+  } catch (err) {
+    console.error(err);
+    setError(err instanceof Error ? err.message : 'Unknown error');
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="grid">
       <div className="card">

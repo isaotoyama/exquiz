@@ -1,28 +1,35 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { index } from "../server/src/pinecone";
-import { answersToText, answersToVector } from "../server/src/embed";
-import { calculateSummary } from "../server/src/score";
-import crypto from "node:crypto";
+import express from 'express';
+import cors from 'cors';
+import crypto from 'node:crypto';
+import { answersToVector } from '../server/src/embed.js';
+import { upsertVector, querySimilar } from '../server/src/pinecone.js';
+import { calculateSummary, buildAdminSummary } from '../server/src/score.js';
+import { SubmissionPayload } from '../server/src/types.js';
 
-dotenv.config();
+// Temporary in-memory fallback for serverless.
+// Replace with Postgres / KV / Supabase for real persistence.
+const records: any[] = [];
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-app.post("/api/submissions", async (req, res) => {
-  const payload = req.body;
-  const summary = calculateSummary(payload.answers);
-  const vector = answersToVector(payload.answers);
-  const text = answersToText(payload.answers);
-  const id = crypto.randomUUID();
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true });
+});
 
-  await index.namespace("executive-questionnaire").upsert([
-    {
+app.post('/api/submissions', async (req, res) => {
+  try {
+    const payload = req.body as SubmissionPayload;
+    const summary = calculateSummary(payload.answers);
+    const id = crypto.randomUUID();
+
+    records.push({ ...payload, id, summary });
+
+    await upsertVector({
       id,
-      values: vector,
+      values: answersToVector(payload.answers),
       metadata: {
         name: payload.profile.name,
         company: payload.profile.company,
@@ -30,30 +37,36 @@ app.post("/api/submissions", async (req, res) => {
         email: payload.profile.email,
         locale: payload.locale,
         submittedAt: payload.submittedAt,
-        text,
         overall: summary.overall,
         ...summary.byCategory
       }
-    }
-  ]);
+    });
 
-  res.json({ ok: true, id, summary });
+    res.json({ ok: true, id, summary });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, error: 'Failed to save submission' });
+  }
 });
 
-app.post("/api/search-similar", async (req, res) => {
-  const vector = answersToVector(req.body.answers);
-
-  const result = await index.namespace("executive-questionnaire").query({
-    vector,
-    topK: 5,
-    includeMetadata: true
-  });
-
-  res.json({ matches: result.matches ?? [] });
+app.post('/api/search-similar', async (req, res) => {
+  try {
+    const payload = req.body as SubmissionPayload;
+    const matches = await querySimilar(answersToVector(payload.answers));
+    res.json({ ok: true, matches });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, error: 'Failed to search similar responses' });
+  }
 });
 
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true });
+app.get('/api/admin/summary', (_req, res) => {
+  try {
+    res.json(buildAdminSummary(records));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, error: 'Failed to build admin summary' });
+  }
 });
 
 export default app;
