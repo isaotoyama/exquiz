@@ -109,7 +109,9 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
                 <div className="metric" key={match.id}>
                   <div style={{ fontWeight: 700 }}>{match.id}</div>
                   <div className="small">score: {match.score.toFixed(3)}</div>
-                  {match.metadata?.company && <div className="small">{String(match.metadata.company)}</div>}
+                  {typeof match.metadata?.company === 'string' && (
+                    <div className="small">{match.metadata.company}</div>
+                  )}
                 </div>
               ))}
             </div>
