@@ -1,7 +1,10 @@
 {
   "name": "ux-exec-questionnaire",
   "private": true,
-  "workspaces": ["client", "server"],
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "install:all": "npm install --workspaces",
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
