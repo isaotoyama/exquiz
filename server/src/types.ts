@@ -26,8 +26,12 @@ export interface SubmissionPayload {
 export interface ScoreSummary {
   overall: number;
   byCategory: Record<QuestionCategory, number>;
-  orientation: Record<Locale, string>;
+  orientation: {
+    en: string;
+    ja: string;
+  };
 }
+
 
 export interface SubmissionRecord extends SubmissionPayload {
   id: string;

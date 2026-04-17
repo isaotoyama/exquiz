@@ -1,7 +1,10 @@
 {
   "name": "ux-exec-questionnaire",
   "private": true,
-  "workspaces": ["client", "server"],
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "install:all": "npm install --workspaces",
     "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
@@ -9,6 +12,10 @@
     "start": "npm run start -w server"
   },
   "devDependencies": {
+    "@vercel/node": "^5.7.10",
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "@pinecone-database/pinecone": "^7.2.0"
   }
 }
