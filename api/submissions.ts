@@ -1,33 +1,63 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import crypto from 'node:crypto';
-import { calculateSummary } from '../server/src/score';
-import type { SubmissionPayload } from '../server/src/types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'Method not allowed' });
-  }
-
   try {
-    const payload = req.body as SubmissionPayload;
+    if (req.method !== 'POST') {
+      return res.status(405).json({ ok: false, error: 'Method not allowed' });
+    }
+
+    let scoreMod: any;
+    try {
+      scoreMod = await import('../server/src/score');
+    } catch (error) {
+      console.error('failed importing score', error);
+      return res.status(500).json({
+        ok: false,
+        stage: 'import score',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+
+    let typesMod: any;
+    try {
+      typesMod = await import('../server/src/types');
+    } catch (error) {
+      console.error('failed importing types', error);
+      return res.status(500).json({
+        ok: false,
+        stage: 'import types',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+
+    const payload = req.body as any;
 
     if (!payload || !payload.answers) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
 
-    const id = crypto.randomUUID();
-    const summary = calculateSummary(payload.answers);
+    let summary: any;
+    try {
+      summary = scoreMod.calculateSummary(payload.answers);
+    } catch (error) {
+      console.error('failed calculating summary', error);
+      return res.status(500).json({
+        ok: false,
+        stage: 'calculateSummary',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
 
     return res.status(200).json({
       ok: true,
-      id,
       summary
     });
   } catch (error) {
-    console.error('submissions step 1 failed', error);
+    console.error('top-level handler failure', error);
     return res.status(500).json({
       ok: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      stage: 'top-level',
+      error: error instanceof Error ? error.message : String(error)
     });
   }
 }
