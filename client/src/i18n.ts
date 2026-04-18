@@ -10,12 +10,19 @@ export const ui = {
     overall: 'Overall score',
     interpretation: 'Interpretation',
     similar: 'Similar responses',
+
     reportTitle: 'Executive Report',
     reportSubtitle:
       'This report shows how leadership philosophy may shape product quality, employee value, ethics, and long-term business resilience.',
     reportBack: 'Back to questionnaire',
     radarTitle: 'Strategic profile',
     themesTitle: 'What this suggests',
+
+    responses: 'Responses',
+    radar: 'Radar Chart',
+    clusters: 'Clusters',
+    recent: 'Recent Submissions',
+
     categoryLabels: {
       timeHorizon: 'Time Horizon',
       valueDefinition: 'Definition of Value',
@@ -24,6 +31,7 @@ export const ui = {
       researchEvidence: 'Research and Evidence',
       orgAlignment: 'Organizational Alignment'
     },
+
     reportThemes: {
       longTerm:
         'This organization appears more willing to invest in durable trust, product quality, and long-term relevance rather than only chasing near-term profit.',
@@ -33,6 +41,7 @@ export const ui = {
         'This organization shows mixed signals. It may be trying to balance near-term performance with long-term value, but leadership assumptions are not yet fully aligned.'
     }
   },
+
   ja: {
     title: '経営層向け UX 質問票',
     subtitle:
@@ -44,12 +53,19 @@ export const ui = {
     overall: '総合スコア',
     interpretation: '解釈',
     similar: '近い回答例',
+
     reportTitle: '診断レポート',
     reportSubtitle:
       'このレポートは、経営思想がプロダクト品質、従業員価値、倫理、そして長期的な事業持続性にどう影響するかを示します。',
     reportBack: '質問票に戻る',
     radarTitle: '戦略プロファイル',
     themesTitle: 'この結果が示すこと',
+
+    responses: '回答数',
+    radar: 'レーダーチャート',
+    clusters: 'クラスター',
+    recent: '最近の回答',
+
     categoryLabels: {
       timeHorizon: '時間軸',
       valueDefinition: '価値の定義',
@@ -58,6 +74,7 @@ export const ui = {
       researchEvidence: '調査と根拠',
       orgAlignment: '組織の整合性'
     },
+
     reportThemes: {
       longTerm:
         'この組織は、短期利益だけでなく、信頼、品質、長期的な競争力への投資を比較的重視している可能性があります。',
@@ -67,4 +84,4 @@ export const ui = {
         'この組織は短期成果と長期価値の両立を目指しているものの、経営の前提や判断基準はまだ十分に揃っていない可能性があります。'
     }
   }
-};
+} as const;
