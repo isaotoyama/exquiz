@@ -1,5 +1,5 @@
-import { orderedQuestionIds } from '../../lib/questions.js';
-import { AnswerMap } from '../../lib/types.js';
+import { orderedQuestionIds } from './questions';
+import { AnswerMap } from './types';
 
 export function answersToVector(answers: AnswerMap): number[] {
   const values = orderedQuestionIds.map((id) => answers[id] ?? 0);

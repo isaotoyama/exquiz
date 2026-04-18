@@ -1,63 +1,52 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import crypto from 'node:crypto';
+import { calculateSummary } from '../lib/score';
+import { answersToVector } from '../lib/embed';
+import { upsertVector } from '../lib/pinecone';
+import type { SubmissionPayload } from '../lib/types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Method not allowed' });
+  }
+
   try {
-    if (req.method !== 'POST') {
-      return res.status(405).json({ ok: false, error: 'Method not allowed' });
-    }
+    const payload = req.body as SubmissionPayload;
 
-    let scoreMod: any;
-    try {
-      scoreMod = await import('../lib/score');
-    } catch (error) {
-      console.error('failed importing score', error);
-      return res.status(500).json({
-        ok: false,
-        stage: 'import score',
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-
-    let typesMod: any;
-    try {
-      typesMod = await import('../lib/types');
-    } catch (error) {
-      console.error('failed importing types', error);
-      return res.status(500).json({
-        ok: false,
-        stage: 'import types',
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
-
-    const payload = req.body as any;
-
-    if (!payload || !payload.answers) {
+    if (!payload || !payload.profile || !payload.answers || !payload.submittedAt) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
 
-    let summary: any;
-    try {
-      summary = scoreMod.calculateSummary(payload.answers);
-    } catch (error) {
-      console.error('failed calculating summary', error);
-      return res.status(500).json({
-        ok: false,
-        stage: 'calculateSummary',
-        error: error instanceof Error ? error.message : String(error)
-      });
-    }
+    const id = crypto.randomUUID();
+    const summary = calculateSummary(payload.answers);
+    const vector = answersToVector(payload.answers);
 
-    return res.status(200).json({
-      ok: true,
-      summary
+    await upsertVector({
+      id,
+      values: vector,
+      metadata: {
+        name: payload.profile.name ?? '',
+        company: payload.profile.company ?? '',
+        title: payload.profile.title ?? '',
+        email: payload.profile.email ?? '',
+        locale: payload.locale ?? 'en',
+        submittedAt: payload.submittedAt,
+        overall: summary.overall,
+        timeHorizon: summary.byCategory.timeHorizon,
+        valueDefinition: summary.byCategory.valueDefinition,
+        sourceOfTruth: summary.byCategory.sourceOfTruth,
+        investmentLogic: summary.byCategory.investmentLogic,
+        researchEvidence: summary.byCategory.researchEvidence,
+        orgAlignment: summary.byCategory.orgAlignment
+      }
     });
+
+    return res.status(200).json({ ok: true, id, summary });
   } catch (error) {
-    console.error('top-level handler failure', error);
+    console.error('POST /api/submissions failed', error);
     return res.status(500).json({
       ok: false,
-      stage: 'top-level',
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : 'Internal server error'
     });
   }
 }

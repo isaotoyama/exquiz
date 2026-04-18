@@ -1,5 +1,5 @@
-import { questionCategoryMap } from './questions.js';
-import { AnswerMap, QuestionCategory, ScoreSummary, SubmissionRecord } from './types.js';
+import { questionCategoryMap } from './questions';
+import { AnswerMap, QuestionCategory, ScoreSummary, SubmissionRecord } from './types';
 
 export function calculateSummary(answers: AnswerMap): ScoreSummary {
   const buckets: Record<QuestionCategory, number[]> = {
