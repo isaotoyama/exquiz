@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { SubmissionRecord } from './types.js';
+import { SubmissionRecord } from '../../lib/types.js';
 
 const dataDir = path.resolve(process.cwd(), 'data');
 const filePath = path.join(dataDir, 'submissions.json');

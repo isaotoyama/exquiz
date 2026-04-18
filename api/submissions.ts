@@ -8,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let scoreMod: any;
     try {
-      scoreMod = await import('../server/src/score');
+      scoreMod = await import('../lib/score');
     } catch (error) {
       console.error('failed importing score', error);
       return res.status(500).json({
@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let typesMod: any;
     try {
-      typesMod = await import('../server/src/types');
+      typesMod = await import('../lib/types');
     } catch (error) {
       console.error('failed importing types', error);
       return res.status(500).json({

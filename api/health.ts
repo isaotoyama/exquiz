@@ -1,4 +1,4 @@
-import { buildAdminSummary } from '../server/src/score';
+import { buildAdminSummary } from '../lib/score';
 
 const records: any[] = [];
 export default async function handler() {

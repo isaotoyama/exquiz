@@ -3,10 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import crypto from 'node:crypto';
 import { answersToVector } from './embed.js';
-import { upsertVector, querySimilar } from './pinecone.js';
-import { calculateSummary, buildAdminSummary } from './score.js';
+import { upsertVector, querySimilar } from '../../lib/pinecone.js';
+import { calculateSummary, buildAdminSummary } from '../../lib/score.js';
 import { loadRecords, saveRecord } from './storage.js';
-import { SubmissionPayload, SubmissionRecord } from './types.js';
+import { SubmissionPayload, SubmissionRecord } from '../../lib/types.js';
 
 const app = express();
 const port = Number(process.env.PORT || 8787);

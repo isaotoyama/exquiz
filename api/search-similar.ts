@@ -1,10 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { answersToVector } from '../server/src/embed';
-import { querySimilar } from '../server/src/pinecone';
-
-type SubmissionPayload = {
-  answers: Record<string, number>;
-};
+import { answersToVector } from '../lib/embed';
+import { querySimilar } from '../lib/pinecone';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -12,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const payload = req.body as SubmissionPayload;
+    const payload = req.body as { answers: Record<string, number> };
 
     if (!payload || !payload.answers) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
@@ -21,10 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const vector = answersToVector(payload.answers);
     const matches = await querySimilar(vector);
 
-    return res.status(200).json({
-      ok: true,
-      matches
-    });
+    return res.status(200).json({ ok: true, matches });
   } catch (error) {
     console.error('POST /api/search-similar failed', error);
     return res.status(500).json({

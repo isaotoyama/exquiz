@@ -1,27 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { buildAdminSummary } from '../../server/src/score';
+import { buildAdminSummary } from '../../lib/score';
 
-type SubmissionRecord = {
-  id: string;
-  submittedAt: string;
-  summary: {
-    overall: number;
-    byCategory: {
-      timeHorizon: number;
-      valueDefinition: number;
-      sourceOfTruth: number;
-      investmentLogic: number;
-      researchEvidence: number;
-      orgAlignment: number;
-    };
-  };
-};
-
-const records: SubmissionRecord[] = [];
+const records: any[] = [];
 
 export default function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    const summary = buildAdminSummary(records as any);
+    const summary = buildAdminSummary(records);
     return res.status(200).json(summary);
   } catch (error) {
     console.error('GET /api/admin/summary failed', error);
