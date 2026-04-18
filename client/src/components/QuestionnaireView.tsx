@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { questions } from '../questions';
 import { ui } from '../i18n';
 import { getCategoryLabel } from '../categoryLabels';
+import { countryOptions, industryOptions } from '../profileOptions';
 import {
   AnswerMap,
   Locale,
@@ -134,23 +135,33 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
               />
             </label>
 
-            <label className="label">
-              <span>{locale === 'en' ? 'Country' : '国'}</span>
-              <input
-                value={profile.country}
-                onChange={(e) => setProfile({ ...profile, country: e.target.value })}
-                placeholder={locale === 'en' ? 'e.g. Japan' : '例: 日本'}
-              />
-            </label>
+<label className="label">
+  <span>{locale === 'en' ? 'Country' : '国'}</span>
+  <select
+    value={profile.country}
+    onChange={(e) => setProfile({ ...profile, country: e.target.value })}
+  >
+    {countryOptions.map((option) => (
+      <option key={option.value} value={option.value}>
+        {locale === 'en' ? option.en : option.ja}
+      </option>
+    ))}
+  </select>
+</label>
 
-            <label className="label">
-              <span>{locale === 'en' ? 'Industry' : '業界'}</span>
-              <input
-                value={profile.industry}
-                onChange={(e) => setProfile({ ...profile, industry: e.target.value })}
-                placeholder={locale === 'en' ? 'e.g. Financial Services' : '例: 金融'}
-              />
-            </label>
+<label className="label">
+  <span>{locale === 'en' ? 'Industry' : '業界'}</span>
+  <select
+    value={profile.industry}
+    onChange={(e) => setProfile({ ...profile, industry: e.target.value })}
+  >
+    {industryOptions.map((option) => (
+      <option key={option.value} value={option.value}>
+        {locale === 'en' ? option.en : option.ja}
+      </option>
+    ))}
+  </select>
+</label>
           </div>
         </section>
 

@@ -25,20 +25,15 @@ function getIndex() {
 export async function upsertVector(record: VectorRecord) {
   const { index, namespace } = getIndex();
 
-  if (!record?.id) {
-    throw new Error('record.id is missing');
-  }
-
+  if (!record?.id) throw new Error('record.id is missing');
   if (!Array.isArray(record.values) || record.values.length === 0) {
     throw new Error('record.values is empty');
   }
 
-  const result = await index.upsert({
+  return index.upsert({
     namespace,
     records: [record]
   });
-
-  return result;
 }
 
 export async function querySimilar(vector: number[]) {

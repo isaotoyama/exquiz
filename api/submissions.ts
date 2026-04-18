@@ -4,7 +4,7 @@ import { calculateSummary } from '../lib/score';
 import { answersToVector } from '../lib/embed';
 import { upsertVector } from '../lib/pinecone';
 import type { SubmissionPayload } from '../lib/types';
-import { sql } from '../lib/db';
+import { getSql } from '../lib/db';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -18,37 +18,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
 
+    const sql = getSql();
+
     const id = crypto.randomUUID();
     const summary = calculateSummary(payload.answers);
     const vector = answersToVector(payload.answers);
 
-await sql`
-  insert into submissions (
-    id,
-    submitted_at,
-    locale,
-    profile_name,
-    profile_company,
-    profile_title,
-    profile_email,
-    profile_country,
-    profile_industry,
-    answers,
-    summary
-  ) values (
-    ${id},
-    ${payload.submittedAt},
-    ${payload.locale},
-    ${payload.profile.name ?? ''},
-    ${payload.profile.company ?? ''},
-    ${payload.profile.title ?? ''},
-    ${payload.profile.email ?? ''},
-    ${payload.profile.country ?? ''},
-    ${payload.profile.industry ?? ''},
-    ${JSON.stringify(payload.answers)},
-    ${JSON.stringify(summary)}
-  )
-`;
+    await sql`
+      insert into submissions (
+        id,
+        submitted_at,
+        locale,
+        profile_name,
+        profile_company,
+        profile_title,
+        profile_email,
+        profile_country,
+        profile_industry,
+        answers,
+        summary
+      ) values (
+        ${id},
+        ${payload.submittedAt},
+        ${payload.locale},
+        ${payload.profile.name ?? ''},
+        ${payload.profile.company ?? ''},
+        ${payload.profile.title ?? ''},
+        ${payload.profile.email ?? ''},
+        ${payload.profile.country ?? ''},
+        ${payload.profile.industry ?? ''},
+        ${JSON.stringify(payload.answers)},
+        ${JSON.stringify(summary)}
+      )
+    `;
 
     await upsertVector({
       id,
@@ -58,6 +60,8 @@ await sql`
         company: payload.profile.company ?? '',
         title: payload.profile.title ?? '',
         email: payload.profile.email ?? '',
+        country: payload.profile.country ?? '',
+        industry: payload.profile.industry ?? '',
         locale: payload.locale ?? 'en',
         submittedAt: payload.submittedAt,
         overall: summary.overall,
@@ -77,6 +81,7 @@ await sql`
     });
   } catch (error) {
     console.error('POST /api/submissions failed', error);
+
     return res.status(500).json({
       ok: false,
       error: error instanceof Error ? error.message : 'Internal server error'
