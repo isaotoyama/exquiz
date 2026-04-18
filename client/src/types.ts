@@ -8,6 +8,19 @@ export type QuestionCategory =
   | 'executionStyle'
   | 'responsibilityEthics';
 
+export interface Question {
+  id: string;
+  category: QuestionCategory;
+  prompt: {
+    en: string;
+    ja: string;
+  };
+  theory: {
+    en: string;
+    ja: string;
+  };
+}
+
 export interface RespondentProfile {
   name: string;
   company: string;
