@@ -37,13 +37,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       orgAlignment: summary.byCategory.orgAlignment
     };
 
-    console.log('upsert payload', {
-      id,
-      vectorLength: vector.length,
-      firstThree: vector.slice(0, 3),
-      metadataKeys: Object.keys(metadata)
-    });
-
     await upsertVector({
       id,
       values: vector,
