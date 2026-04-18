@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'node:crypto';
 import { calculateSummary } from '../lib/score';
 import { answersToVector } from '../lib/embed';
+import { getSql } from '../lib/db';
 import type { SubmissionPayload } from '../lib/types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -16,9 +17,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
 
+    const sql = getSql();
     const id = crypto.randomUUID();
     const summary = calculateSummary(payload.answers);
     const vector = answersToVector(payload.answers);
+
+    await sql`
+      insert into submissions (
+        id,
+        submitted_at,
+        locale,
+        profile_name,
+        profile_company,
+        profile_title,
+        profile_email,
+        profile_country,
+        profile_industry,
+        answers,
+        summary
+      ) values (
+        ${id},
+        ${payload.submittedAt},
+        ${payload.locale},
+        ${payload.profile.name ?? ''},
+        ${payload.profile.company ?? ''},
+        ${payload.profile.title ?? ''},
+        ${payload.profile.email ?? ''},
+        ${payload.profile.country ?? ''},
+        ${payload.profile.industry ?? ''},
+        ${JSON.stringify(payload.answers)},
+        ${JSON.stringify(summary)}
+      )
+    `;
 
     return res.status(200).json({
       ok: true,
