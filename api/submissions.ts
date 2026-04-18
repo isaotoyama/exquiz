@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'node:crypto';
-import { calculateSummary } from '../server/src/score.js';
-import type { SubmissionPayload } from '../server/src/types.js';
+import { calculateSummary } from '../server/src/score';
+import type { SubmissionPayload } from '../server/src/types';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {

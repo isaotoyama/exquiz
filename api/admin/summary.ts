@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { buildAdminSummary } from '../../server/src/score.js';
+import { buildAdminSummary } from '../../server/src/score';
 
 type SubmissionRecord = {
   id: string;

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { answersToVector } from '../server/src/embed.js';
-import { querySimilar } from '../server/src/pinecone.js';
+import { answersToVector } from '../server/src/embed';
+import { querySimilar } from '../server/src/pinecone';
 
 type SubmissionPayload = {
   answers: Record<string, number>;
