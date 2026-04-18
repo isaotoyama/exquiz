@@ -57,8 +57,8 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
       });
 
       if (!saveRes.ok) {
-        const text = await saveRes.text();
-        throw new Error(`Submit failed: ${saveRes.status} ${text}`);
+        const body = await saveRes.text();
+        throw new Error(body);
       }
 
       const saveData = await saveRes.json();
@@ -86,16 +86,13 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
               <h1 id="questionnaire-title" className="hero-title">{text.title}</h1>
               <p className="hero-subtitle">{text.subtitle}</p>
             </div>
-            <div className="top-actions">
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}
-                aria-label={locale === 'en' ? 'Switch language to Japanese' : 'Switch language to English'}
-              >
-                {text.language}
-              </button>
-            </div>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}
+            >
+              {text.language}
+            </button>
           </div>
         </section>
 
@@ -105,9 +102,6 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
             <label className="label">
               <span>{locale === 'en' ? 'Name' : '氏名'}</span>
               <input
-                name="name"
-                autoComplete="name"
-                placeholder={locale === 'en' ? 'Name' : '氏名'}
                 value={profile.name}
                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
               />
@@ -116,9 +110,6 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
             <label className="label">
               <span>{locale === 'en' ? 'Company' : '会社名'}</span>
               <input
-                name="organization"
-                autoComplete="organization"
-                placeholder={locale === 'en' ? 'Company' : '会社名'}
                 value={profile.company}
                 onChange={(e) => setProfile({ ...profile, company: e.target.value })}
               />
@@ -127,9 +118,6 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
             <label className="label">
               <span>{locale === 'en' ? 'Title' : '役職'}</span>
               <input
-                name="title"
-                autoComplete="organization-title"
-                placeholder={locale === 'en' ? 'Title' : '役職'}
                 value={profile.title}
                 onChange={(e) => setProfile({ ...profile, title: e.target.value })}
               />
@@ -139,9 +127,6 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
               <span>Email</span>
               <input
                 type="email"
-                name="email"
-                autoComplete="email"
-                placeholder="Email"
                 value={profile.email}
                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
               />
@@ -149,40 +134,27 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
           </div>
         </section>
 
-        <section className="card" aria-labelledby="progress-title">
+        <section className="card">
           <div className="progress-wrap">
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-              <h2 id="progress-title" className="section-title" style={{ marginBottom: 0 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <h2 className="section-title" style={{ marginBottom: 0 }}>
                 {locale === 'en' ? 'Progress' : '進捗'}
               </h2>
-              <span className="small" aria-live="polite">
-                {completed} / {questions.length}
-              </span>
+              <span className="small">{completed} / {questions.length}</span>
             </div>
-            <div
-              className="progress-bar"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={questions.length}
-              aria-valuenow={completed}
-              aria-label={locale === 'en' ? 'Questionnaire progress' : '質問票の進捗'}
-            >
+            <div className="progress-bar">
               <span style={{ width: `${progress}%` }} />
             </div>
           </div>
         </section>
 
         {questions.map((q, index) => (
-          <section className="card question-card" key={q.id} aria-labelledby={`${q.id}-title`}>
+          <section className="card question-card" key={q.id}>
             <div className="question-meta">
               {index + 1}. {getCategoryLabel(q.category, locale)}
             </div>
 
-            <h2 id={`${q.id}-title`} className="question-title">
-              {q.prompt[locale]}
-            </h2>
-
-            <p className="small">{q.theory[locale]}</p>
+            <h2 className="question-title">{q.prompt[locale]}</h2>
 
             <fieldset className="answer-group">
               <legend className="answer-legend">
@@ -191,22 +163,15 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
 
               <div className="question-scale">
                 <div className="scale-labels">
-                  <span>
-                    {locale === 'en' ? 'Short-term / profit-first' : '短期利益・効率優先'}
-                  </span>
-                  <span>
-                    {locale === 'en' ? 'Long-term / value-centered' : '長期価値・人・社会重視'}
-                  </span>
+                  <span>{locale === 'en' ? 'Short-term / profit-first' : '短期利益・効率優先'}</span>
+                  <span>{locale === 'en' ? 'Long-term / value-centered' : '長期価値・人・社会重視'}</span>
                 </div>
 
-                <div className="bubbles" role="radiogroup" aria-labelledby={`${q.id}-title`}>
+                <div className="bubbles">
                   {scale.map((value) => (
                     <button
                       key={value}
                       type="button"
-                      role="radio"
-                      aria-checked={answers[q.id] === value}
-                      aria-label={`${locale === 'en' ? 'Answer' : '回答'} ${value}`}
                       className={`bubble ${answers[q.id] === value ? 'selected' : ''}`}
                       onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: value }))}
                     >
@@ -220,7 +185,7 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
         ))}
 
         {error && (
-          <div className="notice-error" role="alert" aria-live="assertive">
+          <div className="notice-error" role="alert">
             {error}
           </div>
         )}
@@ -231,7 +196,6 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
             className="primary"
             disabled={completed !== questions.length || loading}
             onClick={submit}
-            aria-busy={loading}
           >
             {loading ? text.loading : text.submit}
           </button>

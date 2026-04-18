@@ -4,6 +4,7 @@ import { questions } from '../questions';
 import { ui } from '../i18n';
 import { getCategoryLabel, getCategorySummary } from '../categoryLabels';
 import { AnswerMap, Locale, QuestionCategory, ScoreSummary } from '../types';
+import { RadarChart } from './RadarChart';
 
 type Props = {
   locale: Locale;
@@ -19,31 +20,6 @@ function getThemeMessage(summary: ScoreSummary, locale: Locale) {
   if (summary.overall >= 4) return text.longTerm;
   if (summary.overall < 2.5) return text.shortTerm;
   return text.balanced;
-}
-
-function RadarBars({
-  locale,
-  byCategory
-}: {
-  locale: Locale;
-  byCategory: Record<QuestionCategory, number>;
-}) {
-  const entries = Object.entries(byCategory) as [QuestionCategory, number][];
-
-  return (
-    <div className="metric-grid">
-      {entries.map(([key, value]) => (
-        <div key={key} className="metric">
-          <div className="small">{getCategoryLabel(key, locale)}</div>
-          <div className="bar-wrap" aria-hidden="true">
-            <div className="bar-fill" style={{ width: `${(value / 5) * 100}%` }} />
-          </div>
-          <div className="metric-value">{value.toFixed(2)}</div>
-          <div className="small">{getCategorySummary(key, locale)}</div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export function ReportView({ locale, setLocale, reportData }: Props) {
@@ -67,6 +43,7 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
   }
 
   const { summary, answers } = reportData;
+  const entries = Object.entries(summary.byCategory) as [QuestionCategory, number][];
 
   return (
     <main className="page">
@@ -77,19 +54,17 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
               <h1 className="hero-title">{text.reportTitle}</h1>
               <p className="hero-subtitle">{text.reportSubtitle}</p>
             </div>
-            <div className="top-actions">
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}
-              >
-                {text.language}
-              </button>
-            </div>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}
+            >
+              {text.language}
+            </button>
           </div>
         </section>
 
-        <section className="grid-2" aria-label={locale === 'en' ? 'Summary' : 'サマリー'}>
+        <section className="grid-2">
           <div className="card">
             <h2 className="section-title">{text.overall}</h2>
             <div className="metric-value">{summary.overall.toFixed(2)} / 5</div>
@@ -104,16 +79,28 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
           </div>
         </section>
 
-        <section className="card" aria-labelledby="radar-title">
-          <h2 id="radar-title" className="section-title">{text.radarTitle}</h2>
-          <RadarBars locale={locale} byCategory={summary.byCategory} />
+        <section className="card">
+          <h2 className="section-title">{text.radarTitle}</h2>
+          <RadarChart locale={locale} data={summary.byCategory} />
         </section>
 
-        <section className="card" aria-labelledby="question-interpretation-title">
-          <h2 id="question-interpretation-title" className="section-title">
-            {text.questionInterpretation}
+        <section className="card">
+          <h2 className="section-title">
+            {locale === 'en' ? 'Category summary' : 'カテゴリー別サマリー'}
           </h2>
+          <div className="metric-grid">
+            {entries.map(([key, value]) => (
+              <div key={key} className="metric">
+                <div className="small">{getCategoryLabel(key, locale)}</div>
+                <div className="metric-value">{value.toFixed(2)}</div>
+                <div className="small">{getCategorySummary(key, locale)}</div>
+              </div>
+            ))}
+          </div>
+        </section>
 
+        <section className="card">
+          <h2 className="section-title">{text.questionInterpretation}</h2>
           <div className="question-review">
             {questions.map((q) => (
               <article key={q.id} className="question-review-card">
@@ -122,7 +109,9 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
                 <div className="answer-chip">
                   {text.answerLabel}: {answers[q.id] ?? '-'}
                 </div>
-                <p className="small" style={{ marginTop: 10 }}>{q.theory[locale]}</p>
+                <p className="small" style={{ marginTop: 10 }}>
+                  {q.theory[locale]}
+                </p>
               </article>
             ))}
           </div>
