@@ -4,9 +4,9 @@ export type QuestionCategory =
   | 'timeHorizon'
   | 'valueDefinition'
   | 'sourceOfTruth'
-  | 'investmentLogic'
-  | 'researchEvidence'
-  | 'orgAlignment';
+  | 'peopleCulture'
+  | 'executionStyle'
+  | 'responsibilityEthics';
 
 export interface RespondentProfile {
   name: string;

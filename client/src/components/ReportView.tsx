@@ -31,14 +31,14 @@ function RadarBars({
   const entries = Object.entries(byCategory) as [QuestionCategory, number][];
 
   return (
-    <div className="grid">
+    <div className="metric-grid">
       {entries.map(([key, value]) => (
         <div key={key} className="metric">
           <div className="small">{getCategoryLabel(key, locale)}</div>
-          <div className="bar-wrap">
+          <div className="bar-wrap" aria-hidden="true">
             <div className="bar-fill" style={{ width: `${(value / 5) * 100}%` }} />
           </div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>{value.toFixed(2)}</div>
+          <div className="metric-value">{value.toFixed(2)}</div>
           <div className="small">{getCategorySummary(key, locale)}</div>
         </div>
       ))}
@@ -52,72 +52,88 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
 
   if (!reportData) {
     return (
-      <div className="card">
-        <h1>{text.reportTitle}</h1>
-        <p>No report data found.</p>
-        <button type="button" onClick={() => navigate('/')}>
-          {text.reportBack}
-        </button>
-      </div>
+      <main className="page">
+        <div className="card">
+          <h1 className="hero-title">{text.reportTitle}</h1>
+          <p className="hero-subtitle">
+            {locale === 'en' ? 'No report data found.' : 'レポートデータが見つかりません。'}
+          </p>
+          <button type="button" className="primary" onClick={() => navigate('/')}>
+            {text.reportBack}
+          </button>
+        </div>
+      </main>
     );
   }
 
   const { summary, answers } = reportData;
 
   return (
-    <div className="grid">
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1>{text.reportTitle}</h1>
-            <p>{text.reportSubtitle}</p>
-          </div>
-          <button type="button" onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}>
-            {text.language}
-          </button>
-        </div>
-      </div>
-
-      <div className="grid-2">
-        <div className="card">
-          <h2>{text.overall}: {summary.overall.toFixed(2)} / 5</h2>
-          <p>
-            <strong>{text.interpretation}:</strong> {summary.orientation[locale]}
-          </p>
-        </div>
-
-        <div className="card">
-          <h2>{text.themesTitle}</h2>
-          <p>{getThemeMessage(summary, locale)}</p>
-        </div>
-      </div>
-
-      <div className="card">
-        <h2>{text.radarTitle}</h2>
-        <RadarBars locale={locale} byCategory={summary.byCategory} />
-      </div>
-
-      <div className="card">
-        <h2>{text.questionInterpretation}</h2>
-        <div className="grid">
-          {questions.map((q) => (
-            <div key={q.id} className="metric">
-              <div className="small">{getCategoryLabel(q.category, locale)}</div>
-              <h3 style={{ marginTop: 8 }}>{q.prompt[locale]}</h3>
-              <div className="small" style={{ marginBottom: 8 }}>
-                {text.answerLabel}: {answers[q.id] ?? '-'}
-              </div>
-              <p className="small">{q.theory[locale]}</p>
+    <main className="page">
+      <div className="grid">
+        <section className="card">
+          <div className="card-header">
+            <div>
+              <h1 className="hero-title">{text.reportTitle}</h1>
+              <p className="hero-subtitle">{text.reportSubtitle}</p>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="top-actions">
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}
+              >
+                {text.language}
+              </button>
+            </div>
+          </div>
+        </section>
 
-      <div className="card">
-        <button type="button" className="primary" onClick={() => navigate('/')}>
-          {text.reportBack}
-        </button>
+        <section className="grid-2" aria-label={locale === 'en' ? 'Summary' : 'サマリー'}>
+          <div className="card">
+            <h2 className="section-title">{text.overall}</h2>
+            <div className="metric-value">{summary.overall.toFixed(2)} / 5</div>
+            <p>
+              <strong>{text.interpretation}:</strong> {summary.orientation[locale]}
+            </p>
+          </div>
+
+          <div className="card">
+            <h2 className="section-title">{text.themesTitle}</h2>
+            <p>{getThemeMessage(summary, locale)}</p>
+          </div>
+        </section>
+
+        <section className="card" aria-labelledby="radar-title">
+          <h2 id="radar-title" className="section-title">{text.radarTitle}</h2>
+          <RadarBars locale={locale} byCategory={summary.byCategory} />
+        </section>
+
+        <section className="card" aria-labelledby="question-interpretation-title">
+          <h2 id="question-interpretation-title" className="section-title">
+            {text.questionInterpretation}
+          </h2>
+
+          <div className="question-review">
+            {questions.map((q) => (
+              <article key={q.id} className="question-review-card">
+                <div className="small">{getCategoryLabel(q.category, locale)}</div>
+                <h3>{q.prompt[locale]}</h3>
+                <div className="answer-chip">
+                  {text.answerLabel}: {answers[q.id] ?? '-'}
+                </div>
+                <p className="small" style={{ marginTop: 10 }}>{q.theory[locale]}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="card">
+          <button type="button" className="primary" onClick={() => navigate('/')}>
+            {text.reportBack}
+          </button>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

@@ -1,11 +1,12 @@
 export type Locale = 'en' | 'ja';
+
 export type QuestionCategory =
   | 'timeHorizon'
   | 'valueDefinition'
   | 'sourceOfTruth'
-  | 'investmentLogic'
-  | 'researchEvidence'
-  | 'orgAlignment';
+  | 'peopleCulture'
+  | 'executionStyle'
+  | 'responsibilityEthics';
 
 export interface RespondentProfile {
   name: string;
@@ -31,7 +32,6 @@ export interface ScoreSummary {
     ja: string;
   };
 }
-
 
 export interface SubmissionRecord extends SubmissionPayload {
   id: string;

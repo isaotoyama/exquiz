@@ -4,217 +4,222 @@ export const questions: Question[] = [
   {
     id: 'q1',
     category: 'timeHorizon',
-    theory: {
-      en: 'Experience strategy values durable trust over short-term market noise.',
-      ja: '体験戦略は、短期的な市場ノイズよりも持続的な信頼を重視する。'
-    },
     prompt: {
-      en: 'Do you pay more attention to daily stock price, weekly sales, or short-term conversion than to whether customers will still trust your product in five years?',
-      ja: '日々の株価や週次売上、短期的なコンバージョンよりも、5年後も顧客に信頼される製品かどうかを重視していますか？'
+      en: 'When making major decisions, what matters more: this quarter’s performance or the company’s relevance five years from now?',
+      ja: '重要な意思決定をするとき、今四半期の成果と5年後の企業の存在価値のどちらをより重視しますか？'
+    },
+    theory: {
+      en: 'This reveals whether leadership manages for immediate outcomes or for long-term resilience and value creation.',
+      ja: 'これは、経営が短期成果を管理しているのか、長期的な持続性と価値創造を重視しているのかを示します。'
     }
   },
   {
     id: 'q2',
     category: 'timeHorizon',
-    theory: {
-      en: 'Long-term loyalty sometimes requires short-term tradeoffs.',
-      ja: '長期的なロイヤルティには、短期的なトレードオフが必要なことがある。'
-    },
     prompt: {
-      en: 'Would you accept a short-term revenue dip if it led to stronger customer trust over the next three years?',
-      ja: '今後3年間の顧客信頼向上につながるなら、短期的な売上低下を受け入れられますか？'
+      en: 'Would leadership accept short-term profit pressure if it protected long-term trust, quality, or reputation?',
+      ja: '長期的な信頼、品質、評判を守るためであれば、短期的な利益圧力を受け入れられますか？'
+    },
+    theory: {
+      en: 'This shows whether the company can sacrifice near-term gain to protect long-term value.',
+      ja: 'これは、短期利益よりも長期価値を守れる会社かどうかを示します。'
     }
   },
   {
     id: 'q3',
     category: 'timeHorizon',
-    theory: {
-      en: 'Current success does not guarantee future relevance.',
-      ja: '現在の成功は将来の適合性を保証しない。'
-    },
     prompt: {
-      en: 'Can a product remain competitive without continuous investment in understanding changing user needs?',
-      ja: '変化するユーザーニーズへの継続的な理解なしに、製品は競争力を保てると思いますか？'
+      en: 'Does the company invest in capabilities that may not pay off immediately but strengthen future competitiveness?',
+      ja: 'すぐに成果が出なくても、将来の競争力を高める能力や仕組みに投資していますか？'
+    },
+    theory: {
+      en: 'This reflects whether the company sees the future as something to build, not just react to.',
+      ja: 'これは、未来を反応的に待つのではなく、自ら作るものと捉えているかを示します。'
     }
   },
+
   {
     id: 'q4',
     category: 'valueDefinition',
-    theory: {
-      en: 'Business success and user success are related but not identical.',
-      ja: '事業成功とユーザー成功は関連するが同一ではない。'
-    },
     prompt: {
-      en: 'When business metrics improve, do you assume the customer experience is also improving?',
-      ja: '事業指標が改善したとき、顧客体験も改善していると考えますか？'
+      en: 'How does the company define success: mostly financial performance, or broader value including customers, employees, and society?',
+      ja: '会社は成功をどう定義していますか。主に財務成果ですか、それとも顧客・従業員・社会を含む広い価値ですか？'
+    },
+    theory: {
+      en: 'This reveals whether value is treated narrowly as profit or more broadly as sustainable impact.',
+      ja: 'これは、価値を利益だけで捉えるのか、持続的な影響まで含めるのかを示します。'
     }
   },
   {
     id: 'q5',
     category: 'valueDefinition',
-    theory: {
-      en: 'Outcome-driven organizations measure customer progress, not just output.',
-      ja: 'アウトカム志向の組織は、アウトプットだけでなく顧客の前進を測る。'
-    },
     prompt: {
-      en: 'Do you evaluate teams more by release volume or by improvement in customer outcomes after release?',
-      ja: 'チームはリリース量よりも、リリース後の顧客成果の改善で評価されていますか？'
+      en: 'When trade-offs arise, does the company prioritize extraction of value or creation of value?',
+      ja: 'トレードオフが起きたとき、会社は価値を取りにいくことと価値を生み出すことのどちらを優先しますか？'
+    },
+    theory: {
+      en: 'This distinguishes exploitative growth logic from constructive long-term business building.',
+      ja: 'これは、収奪的な成長論理か、長期的な価値創造型かを分ける視点です。'
     }
   },
   {
     id: 'q6',
     category: 'valueDefinition',
-    theory: {
-      en: 'Service design frames customers as long-term relationships.',
-      ja: 'サービスデザインは、顧客を長期的な関係として捉える。'
-    },
     prompt: {
-      en: 'Do you see customers primarily as transactions to optimize or relationships to build over time?',
-      ja: '顧客を最適化すべき取引として見ることが多いですか、それとも時間をかけて築く関係として見ていますか？'
+      en: 'Does leadership believe strong business performance automatically means people are better off?',
+      ja: '経営層は、事業成果が良ければ人々にとっても良い状態だと自動的に考えていますか？'
+    },
+    theory: {
+      en: 'This reveals whether the company can separate financial success from human outcomes.',
+      ja: 'これは、財務的成功と人間的な成果を区別して考えられるかを示します。'
     }
   },
+
   {
     id: 'q7',
     category: 'sourceOfTruth',
-    theory: {
-      en: 'User-centered strategy depends on evidence, not only authority.',
-      ja: 'ユーザー中心の戦略は、権限だけでなく根拠に基づく。'
-    },
     prompt: {
-      en: 'Whose feedback most strongly shapes major product decisions: investors, internal stakeholders, or users?',
-      ja: '重要なプロダクト意思決定に最も強く影響するのは誰ですか。投資家、社内ステークホルダー、それともユーザーですか？'
+      en: 'What shapes major decisions more: hierarchy, investor pressure, or evidence from real users, employees, and customers?',
+      ja: '重要な意思決定に最も影響するのは何ですか。階層、投資家圧力、それとも実際の顧客・従業員・利用者の声ですか？'
+    },
+    theory: {
+      en: 'This shows who the company is actually built to serve.',
+      ja: 'これは、その会社が本当は誰のために動いているのかを示します。'
     }
   },
   {
     id: 'q8',
     category: 'sourceOfTruth',
-    theory: {
-      en: 'Research reduces strategic risk.',
-      ja: 'リサーチは戦略リスクを下げる。'
-    },
     prompt: {
-      en: 'Before major decisions, do you invest more in understanding user behavior than in validating internal assumptions?',
-      ja: '大きな判断の前に、社内前提の正当化よりもユーザー行動の理解に投資していますか？'
+      en: 'Before major decisions, does the organization seek evidence and understanding, or mostly defend pre-existing assumptions?',
+      ja: '大きな意思決定の前に、組織は証拠と理解を求めますか、それとも既存の前提を正当化することが多いですか？'
+    },
+    theory: {
+      en: 'This reveals whether the company learns before acting, or acts first and rationalizes later.',
+      ja: 'これは、行動前に学ぶ組織か、先に動いて後で正当化する組織かを示します。'
     }
   },
   {
     id: 'q9',
     category: 'sourceOfTruth',
-    theory: {
-      en: 'Leadership distance from customers weakens experience quality.',
-      ja: '経営層が顧客から遠いほど体験品質は弱くなる。'
-    },
     prompt: {
-      en: 'How often do senior leaders directly observe customers using the product or service?',
-      ja: '経営層はどの程度の頻度で、顧客が製品やサービスを使う様子を直接観察していますか？'
+      en: 'How often do leaders directly observe what customers, employees, or partners actually experience?',
+      ja: '経営層は、顧客・従業員・パートナーが実際に何を経験しているかをどの程度直接見ていますか？'
+    },
+    theory: {
+      en: 'This reveals how close or distant leadership is from lived reality.',
+      ja: 'これは、経営が現実の体験にどれだけ近いか遠いかを示します。'
     }
   },
+
   {
     id: 'q10',
-    category: 'investmentLogic',
-    theory: {
-      en: 'Speed matters only when teams are learning the right thing.',
-      ja: 'スピードは、正しい学びにつながる時に意味を持つ。'
-    },
+    category: 'peopleCulture',
     prompt: {
-      en: 'When forced to choose, do you prioritize shipping quickly or solving the right problem well?',
-      ja: 'どちらかを優先する必要がある場合、早く出すことと、正しい課題を適切に解くことのどちらを優先しますか？'
+      en: 'Are employees treated primarily as labor cost, or as a core source of judgment, learning, and value creation?',
+      ja: '従業員は主に労働コストとして扱われていますか、それとも判断・学習・価値創造の中核として扱われていますか？'
+    },
+    theory: {
+      en: 'This reveals whether people are seen as expendable resources or strategic contributors.',
+      ja: 'これは、人を交換可能な資源と見るのか、戦略的な価値創造者と見るのかを示します。'
     }
   },
   {
     id: 'q11',
-    category: 'investmentLogic',
-    theory: {
-      en: 'Mature organizations fund UX as strategic capability.',
-      ja: '成熟した組織は、UXを戦略的能力として投資する。'
-    },
+    category: 'peopleCulture',
     prompt: {
-      en: 'Is UX funded mainly to improve appearance and usability, or to influence strategy and business direction?',
-      ja: 'UXへの投資は、見た目や使いやすさの改善のためですか、それとも戦略や事業の方向性に影響を与えるためですか？'
+      en: 'Does the company create psychological safety for people to challenge decisions, raise concerns, and surface risk?',
+      ja: '組織には、異議を唱えたり懸念を示したりリスクを共有したりできる心理的安全性がありますか？'
+    },
+    theory: {
+      en: 'This shows whether culture supports healthy correction or suppresses uncomfortable truth.',
+      ja: 'これは、文化が健全な修正を可能にするのか、不都合な真実を抑え込むのかを示します。'
     }
   },
   {
     id: 'q12',
-    category: 'investmentLogic',
-    theory: {
-      en: 'Capability building requires protected budget and time.',
-      ja: '能力形成には、確保された予算と時間が必要である。'
-    },
+    category: 'peopleCulture',
     prompt: {
-      en: 'Do teams have protected time and budget for discovery, research, and design before delivery begins?',
-      ja: '開発着手前に、ディスカバリー、調査、設計のための確保された時間と予算がありますか？'
+      en: 'When performance pressure rises, does the company protect people, or does it sacrifice them first?',
+      ja: '成果圧力が高まったとき、会社は人を守りますか、それとも最初に人を犠牲にしますか？'
+    },
+    theory: {
+      en: 'This reveals the real operating ethics of the organization under stress.',
+      ja: 'これは、プレッシャー下における組織の本当の倫理観を示します。'
     }
   },
+
   {
     id: 'q13',
-    category: 'researchEvidence',
-    theory: {
-      en: 'Good decisions combine qualitative and quantitative evidence.',
-      ja: '良い意思決定は、定性と定量の両方の根拠を組み合わせる。'
-    },
+    category: 'executionStyle',
     prompt: {
-      en: 'Are strategic decisions supported by both qualitative user insight and quantitative behavioral data?',
-      ja: '戦略的意思決定は、定性的なユーザー洞察と定量的な行動データの両方で支えられていますか？'
+      en: 'When forced to choose, does the company prioritize speed alone, or speed with quality and sustainability?',
+      ja: 'どちらかを優先する必要があるとき、会社は速さだけを取りますか、それとも品質と持続性を伴う速さを取りますか？'
+    },
+    theory: {
+      en: 'This reveals whether execution is optimized for output or for durable outcomes.',
+      ja: 'これは、実行が単なるアウトプット最適化か、持続的な成果志向かを示します。'
     }
   },
   {
     id: 'q14',
-    category: 'researchEvidence',
-    theory: {
-      en: 'Research maturity means learning before building.',
-      ja: 'リサーチ成熟度とは、作る前に学ぶことである。'
-    },
+    category: 'executionStyle',
     prompt: {
-      en: 'Do you usually conduct user research before committing to major roadmap decisions?',
-      ja: '重要なロードマップ判断を確定する前に、通常ユーザー調査を行っていますか？'
+      en: 'Are teams rewarded more for shipping quickly or for solving the right problem well?',
+      ja: 'チームは早く出すことよりも、正しい問題をきちんと解くことで評価されていますか？'
+    },
+    theory: {
+      en: 'This shows whether the company rewards motion or meaningful progress.',
+      ja: 'これは、動いた量を評価するのか、意味のある前進を評価するのかを示します。'
     }
   },
   {
     id: 'q15',
-    category: 'researchEvidence',
-    theory: {
-      en: 'Strategy succeeds when users can achieve goals with less friction.',
-      ja: '戦略は、ユーザーがより少ない摩擦で目標を達成できる時に成功する。'
-    },
+    category: 'executionStyle',
     prompt: {
-      en: 'Do you track whether customers complete important tasks more easily over time?',
-      ja: '顧客が重要なタスクを以前より容易に完了できているかを継続的に追跡していますか？'
+      en: 'Does internal complexity get absorbed by the organization, or pushed onto customers and employees?',
+      ja: '社内の複雑さは組織側で吸収されていますか、それとも顧客や従業員に押し付けられていますか？'
+    },
+    theory: {
+      en: 'This reveals whether the organization protects people from complexity or exports it to them.',
+      ja: 'これは、組織が複雑さから人を守るのか、それとも複雑さを外に押し出すのかを示します。'
     }
   },
+
   {
     id: 'q16',
-    category: 'orgAlignment',
-    theory: {
-      en: 'Internal complexity should be absorbed by the organization, not pushed onto customers.',
-      ja: '社内の複雑さは組織が吸収すべきであり、顧客に押し付けるべきではない。'
-    },
+    category: 'responsibilityEthics',
     prompt: {
-      en: 'When processes become complex, do you redesign the system for the customer or ask the customer to absorb the complexity?',
-      ja: '業務プロセスが複雑になった時、顧客のために仕組みを再設計しますか、それとも顧客側に複雑さを受け入れてもらいますか？'
+      en: 'When profit conflicts with ethics, how often does the company choose the ethical path?',
+      ja: '利益と倫理が衝突したとき、会社はどの程度倫理的な選択を取りますか？'
+    },
+    theory: {
+      en: 'This reveals whether ethics is a principle or only a slogan.',
+      ja: 'これは、倫理が原則なのか、単なるスローガンなのかを示します。'
     }
   },
   {
     id: 'q17',
-    category: 'orgAlignment',
-    theory: {
-      en: 'Cross-functional alignment is essential for coherent end-to-end experience.',
-      ja: '一貫したエンドツーエンド体験には、部門横断の整合が不可欠である。'
-    },
+    category: 'responsibilityEthics',
     prompt: {
-      en: 'Are product, design, engineering, sales, and operations aligned around shared customer outcomes?',
-      ja: 'プロダクト、デザイン、開発、営業、運用は、共通の顧客アウトカムに沿って連携していますか？'
+      en: 'Does the company consider the social consequences of its products, services, and decisions?',
+      ja: '会社は、自社の製品・サービス・意思決定が社会に与える影響をどの程度考慮していますか？'
+    },
+    theory: {
+      en: 'This shows whether the business sees itself as socially embedded or purely transactional.',
+      ja: 'これは、企業が社会の中の存在として自分を捉えているのか、単なる取引主体として捉えているのかを示します。'
     }
   },
   {
     id: 'q18',
-    category: 'orgAlignment',
-    theory: {
-      en: 'Leadership behavior sets the operating model for UX maturity.',
-      ja: 'リーダーの行動がUX成熟度の運営モデルを規定する。'
-    },
+    category: 'responsibilityEthics',
     prompt: {
-      en: 'Do senior leaders consistently reinforce that customer experience is a strategic responsibility, not just a team function?',
-      ja: '経営層は、顧客体験が一部門の役割ではなく経営上の責任であると一貫して示していますか？'
+      en: 'Would leadership reject a profitable decision if it damaged trust, fairness, or long-term social legitimacy?',
+      ja: '信頼、公平性、長期的な社会的正当性を損なうなら、利益の出る意思決定でも経営は拒否できますか？'
+    },
+    theory: {
+      en: 'This reveals whether the company is governed only by profit or by a broader sense of responsibility.',
+      ja: 'これは、その企業が利益だけで動くのか、より広い責任感で統治されているのかを示します。'
     }
   }
 ];

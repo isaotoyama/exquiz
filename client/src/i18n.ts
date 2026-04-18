@@ -31,17 +31,17 @@ export const ui = {
       timeHorizon: 'Time Horizon',
       valueDefinition: 'Definition of Value',
       sourceOfTruth: 'Source of Truth',
-      investmentLogic: 'Investment Logic',
-      researchEvidence: 'Research and Evidence',
-      orgAlignment: 'Organizational Alignment'
+      peopleCulture: 'People and Culture',
+      executionStyle: 'Execution Style',
+      responsibilityEthics: 'Responsibility and Ethics'
     },
     categorySummaries: {
       timeHorizon: 'How much leadership prioritizes long-term value over short-term results.',
-      valueDefinition: 'Whether success is defined by profit alone or by customer and social value as well.',
-      sourceOfTruth: 'Whether decisions are driven by hierarchy, market pressure, or real human evidence.',
-      investmentLogic: 'How leadership chooses to invest in speed, quality, trust, and strategic UX capability.',
-      researchEvidence: 'How much decisions are grounded in research, evidence, and real-world learning.',
-      orgAlignment: 'How well the organization aligns functions around long-term customer and business value.'
+      valueDefinition: 'Whether success is defined only by profit or more broadly across people, customers, and society.',
+      sourceOfTruth: 'Whether decisions are driven by hierarchy and pressure or by grounded human understanding and evidence.',
+      peopleCulture: 'Whether employees are treated as cost or as a source of judgment, learning, and value creation.',
+      executionStyle: 'Whether the organization values speed alone or speed with quality and durability.',
+      responsibilityEthics: 'Whether the business is governed only by profit or also by ethics, trust, and social responsibility.'
     },
     reportThemes: {
       longTerm:
@@ -84,17 +84,18 @@ export const ui = {
       timeHorizon: '時間軸',
       valueDefinition: '価値の定義',
       sourceOfTruth: '判断の基準',
-      investmentLogic: '投資の考え方',
-      researchEvidence: '調査と根拠',
-      orgAlignment: '組織の整合性'
+      peopleCulture: '人と文化',
+      executionStyle: '実行スタイル',
+      responsibilityEthics: '責任と倫理'
     },
+
     categorySummaries: {
       timeHorizon: '短期成果よりも長期的価値をどれだけ重視しているかを示します。',
-      valueDefinition: '利益だけでなく、顧客価値や社会的価値まで含めて成功を定義しているかを示します。',
-      sourceOfTruth: '意思決定が上意下達、市場圧力、または人間理解のどこに基づいているかを示します。',
-      investmentLogic: 'スピード、品質、信頼、UX能力のどこに投資しているかを示します。',
-      researchEvidence: '調査や根拠に基づく学習が意思決定にどれだけ使われているかを示します。',
-      orgAlignment: '組織全体が長期的な顧客価値と事業価値に向けてどれだけ整合しているかを示します。'
+      valueDefinition: '利益だけでなく、顧客・従業員・社会まで含めて価値を定義しているかを示します。',
+      sourceOfTruth: '意思決定が階層や圧力ではなく、現場理解や根拠に基づいているかを示します。',
+      peopleCulture: '従業員をコストではなく価値創造の源泉として見ているかを示します。',
+      executionStyle: '速さだけでなく、品質や持続性も重視して実行しているかを示します。',
+      responsibilityEthics: '利益だけでなく、倫理・信頼・社会的責任を重視しているかを示します。'
     },
     reportThemes: {
       longTerm:

@@ -22,14 +22,14 @@ function RadarBars({
   const entries = Object.entries(byCategory) as [QuestionCategory, number][];
 
   return (
-    <div className="grid">
+    <div className="metric-grid">
       {entries.map(([key, value]) => (
         <div key={key} className="metric">
           <div className="small">{getCategoryLabel(key, locale)}</div>
-          <div className="bar-wrap">
+          <div className="bar-wrap" aria-hidden="true">
             <div className="bar-fill" style={{ width: `${(value / 5) * 100}%` }} />
           </div>
-          <div style={{ fontSize: 24, fontWeight: 700 }}>{value.toFixed(2)}</div>
+          <div className="metric-value">{value.toFixed(2)}</div>
         </div>
       ))}
     </div>
@@ -82,96 +82,111 @@ export function AdminDashboard({
   );
 
   return (
-    <div className="grid">
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1>{text.adminTitle}</h1>
-          </div>
-          <button type="button" onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}>
-            {text.language}
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="card" style={{ border: '1px solid #d33', color: '#b00020' }}>
-          {error}
-        </div>
-      )}
-
-      {adminData && (
-        <>
-          <div className="grid-2">
-            <div className="card">
-              <h2>{text.responses}</h2>
-              <div style={{ fontSize: 36, fontWeight: 700 }}>{adminData.totalResponses}</div>
+    <main className="page">
+      <div className="grid">
+        <section className="card">
+          <div className="card-header">
+            <div>
+              <h1 className="hero-title">{text.adminTitle}</h1>
+              <p className="hero-subtitle">
+                {locale === 'en'
+                  ? 'Organizational trends across all respondents.'
+                  : '全回答者における組織傾向の可視化。'}
+              </p>
             </div>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}
+            >
+              {text.language}
+            </button>
+          </div>
+        </section>
 
-            <div className="card">
-              <h2>{text.averageScore}</h2>
-              <div style={{ fontSize: 36, fontWeight: 700 }}>
-                {adminData.averageOverall.toFixed(2)}
+        {error && (
+          <div className="notice-error" role="alert">
+            {error}
+          </div>
+        )}
+
+        {adminData && (
+          <>
+            <section className="grid-2">
+              <div className="card">
+                <h2 className="section-title">{text.responses}</h2>
+                <div className="metric-value">{adminData.totalResponses}</div>
               </div>
-            </div>
-          </div>
 
-          <div className="card">
-            <h2>{text.radar}</h2>
-            <RadarBars locale={locale} byCategory={adminData.categoryAverages} />
-          </div>
+              <div className="card">
+                <h2 className="section-title">{text.averageScore}</h2>
+                <div className="metric-value">{adminData.averageOverall.toFixed(2)}</div>
+              </div>
+            </section>
 
-          <div className="card">
-            <h2>{text.clusters}</h2>
-            <div className="grid-2">
-              {adminData.clusterSummary.map((cluster) => (
-                <div key={cluster.label} className="metric">
-                  <div style={{ fontWeight: 700 }}>{cluster.label}</div>
-                  <div className="small">count: {cluster.count}</div>
-                  <div className="small">average: {cluster.average.toFixed(2)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+            <section className="card">
+              <h2 className="section-title">{text.radar}</h2>
+              <RadarBars locale={locale} byCategory={adminData.categoryAverages} />
+            </section>
 
-          <div className="card">
-            <h2>{text.similarPatterns}</h2>
-            <div className="grid">
-              {patternLabels.map((label, index) => (
-                <div className="metric" key={label}>
-                  <div style={{ fontWeight: 700 }}>{label}</div>
-                  {similarPatterns[index] ? (
-                    <>
-                      <div className="small">score: {similarPatterns[index].score.toFixed(3)}</div>
-                      {typeof similarPatterns[index].metadata?.company === 'string' && (
-                        <div className="small">{similarPatterns[index].metadata?.company}</div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="small">-</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="card">
-            <h2>{text.recent}</h2>
-            <div className="grid">
-              {adminData.recentSubmissions.map((item) => (
-                <div key={item.id} className="metric">
-                  <div style={{ fontWeight: 700 }}>
-                    {item.profile?.company || '-'}
+            <section className="card">
+              <h2 className="section-title">{text.clusters}</h2>
+              <div className="grid-2">
+                {adminData.clusterSummary.map((cluster) => (
+                  <div key={cluster.label} className="metric">
+                    <div style={{ fontWeight: 700 }}>{cluster.label}</div>
+                    <div className="small">
+                      {locale === 'en' ? 'Count' : '件数'}: {cluster.count}
+                    </div>
+                    <div className="small">
+                      {locale === 'en' ? 'Average' : '平均'}: {cluster.average.toFixed(2)}
+                    </div>
                   </div>
-                  <div className="small">{item.profile?.title || '-'}</div>
-                  <div className="small">{item.submittedAt}</div>
-                  <div className="small">{text.overall}: {item.summary.overall.toFixed(2)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="card">
+              <h2 className="section-title">{text.similarPatterns}</h2>
+              <div className="metric-grid">
+                {patternLabels.map((label, index) => (
+                  <div className="metric" key={label}>
+                    <div style={{ fontWeight: 700 }}>{label}</div>
+                    {similarPatterns[index] ? (
+                      <>
+                        <div className="small">
+                          score: {similarPatterns[index].score.toFixed(3)}
+                        </div>
+                        {typeof similarPatterns[index].metadata?.company === 'string' && (
+                          <div className="small">{similarPatterns[index].metadata?.company}</div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="small">-</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="card">
+              <h2 className="section-title">{text.recent}</h2>
+              <div className="metric-grid">
+                {adminData.recentSubmissions.map((item) => (
+                  <div key={item.id} className="metric">
+                    <div style={{ fontWeight: 700 }}>{item.profile?.company || '-'}</div>
+                    <div className="small">{item.profile?.title || '-'}</div>
+                    <div className="small">{item.submittedAt}</div>
+                    <div className="small">
+                      {text.overall}: {item.summary.overall.toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
+      </div>
+    </main>
   );
 }
