@@ -1,12 +1,43 @@
-import { QuestionCategory } from './types.js';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import crypto from 'node:crypto';
+import type { SubmissionPayload } from '../server/src/types.js';
 
-export const questionCategoryMap: Record<string, QuestionCategory> = {
-  q1: 'timeHorizon', q2: 'timeHorizon', q3: 'timeHorizon',
-  q4: 'valueDefinition', q5: 'valueDefinition', q6: 'valueDefinition',
-  q7: 'sourceOfTruth', q8: 'sourceOfTruth', q9: 'sourceOfTruth',
-  q10: 'investmentLogic', q11: 'investmentLogic', q12: 'investmentLogic',
-  q13: 'researchEvidence', q14: 'researchEvidence', q15: 'researchEvidence',
-  q16: 'orgAlignment', q17: 'orgAlignment', q18: 'orgAlignment'
-};
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Method not allowed' });
+  }
 
-export const orderedQuestionIds = Object.keys(questionCategoryMap);
+  try {
+    const payload = req.body as SubmissionPayload;
+
+    if (!payload || !payload.answers) {
+      return res.status(400).json({ ok: false, error: 'Invalid payload' });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      id: crypto.randomUUID(),
+      summary: {
+        overall: 3,
+        byCategory: {
+          timeHorizon: 3,
+          valueDefinition: 3,
+          sourceOfTruth: 3,
+          investmentLogic: 3,
+          researchEvidence: 3,
+          orgAlignment: 3
+        },
+        orientation: {
+          en: 'test',
+          ja: 'test'
+        }
+      }
+    });
+  } catch (error) {
+    console.error('submissions failed', error);
+    return res.status(500).json({
+      ok: false,
+      error: error instanceof Error ? error.message : 'Internal server error'
+    });
+  }
+}
