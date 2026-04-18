@@ -50,6 +50,11 @@ export const ui = {
         'This organization appears more exposed to short-term pressure. That can increase speed and financial focus, but also raises the risk of weaker product quality, employee undervaluation, and ethical compromise.',
       balanced:
         'This organization shows mixed signals. It may be trying to balance near-term performance with long-term value, but leadership assumptions are not yet fully aligned.'
+    },
+    answerScale: {
+      left: 'Short-term / profit-first',
+      middle: 'Balanced',
+      right: 'Long-term / human and value-centered'
     }
   },
   ja: {
@@ -104,6 +109,11 @@ export const ui = {
         'この組織は短期的な圧力に強く影響されている可能性があります。それはスピードや財務重視につながる一方で、プロダクト品質の低下、従業員価値の軽視、倫理的な妥協を招くリスクがあります。',
       balanced:
         'この組織は短期成果と長期価値の両立を目指しているものの、経営の前提や判断基準はまだ十分に揃っていない可能性があります。'
+    },
+    answerScale: {
+      left: '短期利益・効率優先',
+      middle: '中間・バランス型',
+      right: '長期価値・人・社会重視'
     }
   }
 } as const;

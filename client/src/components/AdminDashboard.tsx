@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ui } from '../i18n';
-import { getCategoryLabel } from '../categoryLabels';
-import { AdminSummary, Locale, QuestionCategory, SimilarMatch } from '../types';
+import { AdminSummary, Locale, SimilarMatch } from '../types';
+import { RadarChart } from './RadarChart';
 
 type Props = {
   locale: Locale;
@@ -11,30 +11,6 @@ type Props = {
   similarPatterns: SimilarMatch[];
   setSimilarPatterns: (patterns: SimilarMatch[]) => void;
 };
-
-function RadarBars({
-  locale,
-  byCategory
-}: {
-  locale: Locale;
-  byCategory: Record<QuestionCategory, number>;
-}) {
-  const entries = Object.entries(byCategory) as [QuestionCategory, number][];
-
-  return (
-    <div className="metric-grid">
-      {entries.map(([key, value]) => (
-        <div key={key} className="metric">
-          <div className="small">{getCategoryLabel(key, locale)}</div>
-          <div className="bar-wrap" aria-hidden="true">
-            <div className="bar-fill" style={{ width: `${(value / 5) * 100}%` }} />
-          </div>
-          <div className="metric-value">{value.toFixed(2)}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export function AdminDashboard({
   locale,
@@ -126,7 +102,7 @@ export function AdminDashboard({
 
             <section className="card">
               <h2 className="section-title">{text.radar}</h2>
-              <RadarBars locale={locale} byCategory={adminData.categoryAverages} />
+              <RadarChart locale={locale} data={adminData.categoryAverages} />
             </section>
 
             <section className="card">
@@ -154,11 +130,12 @@ export function AdminDashboard({
                     <div style={{ fontWeight: 700 }}>{label}</div>
                     {similarPatterns[index] ? (
                       <>
-                        <div className="small">
-                          score: {similarPatterns[index].score.toFixed(3)}
-                        </div>
+                        <div className="small">score: {similarPatterns[index].score.toFixed(3)}</div>
                         {typeof similarPatterns[index].metadata?.company === 'string' && (
                           <div className="small">{similarPatterns[index].metadata?.company}</div>
+                        )}
+                        {typeof similarPatterns[index].metadata?.label === 'string' && (
+                          <div className="small">{similarPatterns[index].metadata?.label}</div>
                         )}
                       </>
                     ) : (

@@ -15,7 +15,9 @@ const defaultProfile: RespondentProfile = {
   name: '',
   company: '',
   title: '',
-  email: ''
+  email: '',
+  country: '',
+  industry: ''
 };
 
 const scale = [1, 2, 3, 4, 5];
@@ -129,6 +131,24 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
                 type="email"
                 value={profile.email}
                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+              />
+            </label>
+
+            <label className="label">
+              <span>{locale === 'en' ? 'Country' : '国'}</span>
+              <input
+                value={profile.country}
+                onChange={(e) => setProfile({ ...profile, country: e.target.value })}
+                placeholder={locale === 'en' ? 'e.g. Japan' : '例: 日本'}
+              />
+            </label>
+
+            <label className="label">
+              <span>{locale === 'en' ? 'Industry' : '業界'}</span>
+              <input
+                value={profile.industry}
+                onChange={(e) => setProfile({ ...profile, industry: e.target.value })}
+                placeholder={locale === 'en' ? 'e.g. Financial Services' : '例: 金融'}
               />
             </label>
           </div>

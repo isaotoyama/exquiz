@@ -4,6 +4,7 @@ import { calculateSummary } from '../lib/score';
 import { answersToVector } from '../lib/embed';
 import { upsertVector } from '../lib/pinecone';
 import type { SubmissionPayload } from '../lib/types';
+import { sql } from '../lib/db';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -21,26 +22,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const summary = calculateSummary(payload.answers);
     const vector = answersToVector(payload.answers);
 
-    const metadata = {
-      name: payload.profile.name ?? '',
-      company: payload.profile.company ?? '',
-      title: payload.profile.title ?? '',
-      email: payload.profile.email ?? '',
-      locale: payload.locale ?? 'en',
-      submittedAt: payload.submittedAt,
-      overall: summary.overall,
-      timeHorizon: summary.byCategory.timeHorizon,
-      valueDefinition: summary.byCategory.valueDefinition,
-      sourceOfTruth: summary.byCategory.sourceOfTruth,
-      investmentLogic: summary.byCategory.investmentLogic,
-      researchEvidence: summary.byCategory.researchEvidence,
-      orgAlignment: summary.byCategory.orgAlignment
-    };
+    await sql`
+      insert into submissions (
+        id,
+        submitted_at,
+        locale,
+        profile_name,
+        profile_company,
+        profile_title,
+        profile_email,
+        profile_country,
+        profile_industry,
+        answers,
+        summary
+      ) values (
+        ${id},
+        ${payload.submittedAt},
+        ${payload.locale},
+        ${payload.profile.name ?? ''},
+        ${payload.profile.company ?? ''},
+        ${payload.profile.title ?? ''},
+        ${payload.profile.email ?? ''},
+        ${payload.profile.country ?? ''},
+        ${payload.profile.industry ?? ''},
+        ${JSON.stringify(payload.answers)},
+        ${JSON.stringify(summary)}
+      )
+    `;
 
     await upsertVector({
       id,
       values: vector,
-      metadata
+      metadata: {
+        name: payload.profile.name ?? '',
+        company: payload.profile.company ?? '',
+        title: payload.profile.title ?? '',
+        email: payload.profile.email ?? '',
+        locale: payload.locale ?? 'en',
+        submittedAt: payload.submittedAt,
+        overall: summary.overall,
+        timeHorizon: summary.byCategory.timeHorizon,
+        valueDefinition: summary.byCategory.valueDefinition,
+        sourceOfTruth: summary.byCategory.sourceOfTruth,
+        peopleCulture: summary.byCategory.peopleCulture,
+        executionStyle: summary.byCategory.executionStyle,
+        responsibilityEthics: summary.byCategory.responsibilityEthics
+      }
     });
 
     return res.status(200).json({

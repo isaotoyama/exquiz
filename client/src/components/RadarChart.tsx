@@ -13,7 +13,6 @@ export function RadarChart({ locale, data, size = 420 }: Props) {
   const center = size / 2;
   const radius = size * 0.32;
   const levels = 5;
-
   const angleStep = (Math.PI * 2) / entries.length;
 
   const pointFor = (index: number, value: number, max = 5) => {

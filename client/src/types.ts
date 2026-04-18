@@ -26,6 +26,8 @@ export interface RespondentProfile {
   company: string;
   title: string;
   email: string;
+  country: string;
+  industry: string;
 }
 
 export type AnswerMap = Record<string, number>;
