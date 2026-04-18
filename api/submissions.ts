@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'node:crypto';
-import { answersToVector } from '../server/src/embed.js';
 import { calculateSummary } from '../server/src/score.js';
+import { answersToVector } from '../server/src/embed.js';
 import { upsertVector } from '../server/src/pinecone.js';
 import type { SubmissionPayload } from '../server/src/types.js';
 
@@ -17,13 +17,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
 
-    const answerValues = Object.values(payload.answers);
-    if (answerValues.length === 0) {
-      return res.status(400).json({ ok: false, error: 'No answers provided' });
-    }
-
-    const summary = calculateSummary(payload.answers);
     const id = crypto.randomUUID();
+    const summary = calculateSummary(payload.answers);
     const vector = answersToVector(payload.answers);
 
     await upsertVector({

@@ -13,13 +13,8 @@ function getIndex() {
   const indexName = process.env.PINECONE_INDEX_NAME || 'ux-exec-questionnaire';
   const namespace = process.env.PINECONE_NAMESPACE || 'executive-questionnaire';
 
-  if (!apiKey) {
-    throw new Error('Missing PINECONE_API_KEY');
-  }
-
-  if (!host) {
-    throw new Error('Missing PINECONE_HOST');
-  }
+  if (!apiKey) throw new Error('Missing PINECONE_API_KEY');
+  if (!host) throw new Error('Missing PINECONE_HOST');
 
   const pc = new Pinecone({ apiKey });
   const index = pc.index(indexName, host);
@@ -39,6 +34,5 @@ export async function querySimilar(vector: number[]) {
     topK: 5,
     includeMetadata: true
   });
-
   return result.matches ?? [];
 }
