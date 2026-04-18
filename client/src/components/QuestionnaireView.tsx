@@ -1,17 +1,38 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { questions } from '../questions';
 import { ui } from '../i18n';
-import { AnswerMap, Locale, RespondentProfile, ScoreSummary, SimilarMatch, SubmissionPayload } from '../types';
+import {
+  AnswerMap,
+  Locale,
+  RespondentProfile,
+  ScoreSummary,
+  SimilarMatch,
+  SubmissionPayload
+} from '../types';
+import { getCategoryLabel } from '../categoryLabels';
 
-const defaultProfile: RespondentProfile = { name: '', company: '', title: '', email: '' };
+const defaultProfile: RespondentProfile = {
+  name: '',
+  company: '',
+  title: '',
+  email: ''
+};
+
 const scale = [1, 2, 3, 4, 5];
 
-export function QuestionnaireView({ locale }: { locale: Locale }) {
+type Props = {
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+  onSubmitted: (data: { summary: ScoreSummary; similar: SimilarMatch[] }) => void;
+};
+
+export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
   const text = ui[locale];
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState<RespondentProfile>(defaultProfile);
   const [answers, setAnswers] = useState<AnswerMap>({});
-  const [summary, setSummary] = useState<ScoreSummary | null>(null);
-  const [similar, setSimilar] = useState<SimilarMatch[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +62,6 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
       }
 
       const saveData = await saveRes.json();
-      setSummary(saveData.summary);
 
       const simRes = await fetch('/api/search-similar', {
         method: 'POST',
@@ -55,7 +75,13 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
       }
 
       const simData = await simRes.json();
-      setSimilar(simData.matches ?? []);
+
+      onSubmitted({
+        summary: saveData.summary,
+        similar: simData.matches ?? []
+      });
+
+      navigate('/report');
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Unknown error');
@@ -67,6 +93,16 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
   return (
     <div className="grid">
       <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1>{text.title}</h1>
+            <p>{text.subtitle}</p>
+          </div>
+          <button type="button" onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}>
+            {text.language}
+          </button>
+        </div>
+
         <h2>{text.profile}</h2>
         <div className="grid-2">
           <input
@@ -98,7 +134,7 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
       {questions.map((q, index) => (
         <div className="card" key={q.id}>
           <div className="small">
-            {index + 1}. {q.category}
+            {index + 1}. {getCategoryLabel(q.category, locale)}
           </div>
           <h3>{q.prompt[locale]}</h3>
           <p className="small">{q.theory[locale]}</p>
@@ -107,8 +143,8 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
             <div className="bubbles">
               {scale.map((value) => (
                 <button
-                  key={value}
                   type="button"
+                  key={value}
                   className={`bubble ${answers[q.id] === value ? 'selected' : ''}`}
                   onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: value }))}
                 >
@@ -137,46 +173,6 @@ export function QuestionnaireView({ locale }: { locale: Locale }) {
           {loading ? text.loading : text.submit}
         </button>
       </div>
-
-      {summary && (
-        <div className="grid-2">
-          <div className="card">
-            <h2>
-              {text.overall}: {summary.overall.toFixed(2)} / 5
-            </h2>
-            <p>
-              <strong>{text.interpretation}:</strong> {summary.orientation[locale]}
-            </p>
-            <div className="grid">
-              {Object.entries(summary.byCategory).map(([key, value]) => (
-                <div key={key} className="metric">
-                  <div className="small">{key}</div>
-                  <div style={{ fontSize: 28, fontWeight: 700 }}>{value.toFixed(2)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="card">
-            <h2>{text.similar}</h2>
-            <div className="grid">
-              {similar.length === 0 ? (
-                <div className="small">No matches yet.</div>
-              ) : (
-                similar.map((match) => (
-                  <div className="metric" key={match.id}>
-                    <div style={{ fontWeight: 700 }}>{match.id}</div>
-                    <div className="small">score: {match.score.toFixed(3)}</div>
-                    {typeof match.metadata?.company === 'string' && (
-                      <div className="small">{match.metadata.company}</div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,35 +1,38 @@
-import React, { useState } from 'react';
-import { AdminDashboard } from './components/AdminDashboard';
+import { useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Locale, ScoreSummary, SimilarMatch } from './types';
 import { QuestionnaireView } from './components/QuestionnaireView';
-import { ui } from './i18n';
-import { Locale } from './types';
+import { ReportView } from './components/ReportView';
 
 export default function App() {
   const [locale, setLocale] = useState<Locale>('en');
-  const [tab, setTab] = useState<'questionnaire' | 'admin'>('questionnaire');
-  const text = ui[locale];
+  const [reportData, setReportData] = useState<{
+    summary: ScoreSummary;
+    similar: SimilarMatch[];
+  } | null>(null);
 
   return (
-    <div className="container">
-      <div className="toolbar">
-        <div>
-          <h1 style={{ marginBottom: 6 }}>{text.title}</h1>
-          <div className="small">{text.subtitle}</div>
-        </div>
-        <div className="tabs">
-          <button className={`tab ${tab === 'questionnaire' ? 'active' : ''}`} onClick={() => setTab('questionnaire')}>
-            {text.questionnaire}
-          </button>
-          <button className={`tab ${tab === 'admin' ? 'active' : ''}`} onClick={() => setTab('admin')}>
-            {text.admin}
-          </button>
-          <button className="pill" onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')}>
-            {text.language}
-          </button>
-        </div>
-      </div>
-
-      {tab === 'questionnaire' ? <QuestionnaireView locale={locale} /> : <AdminDashboard locale={locale} />}
-    </div>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <QuestionnaireView
+            locale={locale}
+            setLocale={setLocale}
+            onSubmitted={(data) => setReportData(data)}
+          />
+        }
+      />
+      <Route
+        path="/report"
+        element={
+          <ReportView
+            locale={locale}
+            setLocale={setLocale}
+            reportData={reportData}
+          />
+        }
+      />
+    </Routes>
   );
 }
