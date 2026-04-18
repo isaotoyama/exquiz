@@ -1,7 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'node:crypto';
-import { calculateSummary } from '../server/src/score.js';
-import type { SubmissionPayload } from '../server/src/types.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -9,22 +7,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const payload = req.body as SubmissionPayload;
+    const payload = req.body;
 
     if (!payload || !payload.answers) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
 
-    const id = crypto.randomUUID();
-    const summary = calculateSummary(payload.answers);
-
     return res.status(200).json({
       ok: true,
-      id,
-      summary
+      id: crypto.randomUUID(),
+      summary: {
+        overall: 0,
+        byCategory: {
+          timeHorizon: 0,
+          valueDefinition: 0,
+          sourceOfTruth: 0,
+          investmentLogic: 0,
+          researchEvidence: 0,
+          orgAlignment: 0
+        },
+        orientation: {
+          en: 'test',
+          ja: 'test'
+        }
+      }
     });
   } catch (error) {
-    console.error('submissions step 1 failed', error);
+    console.error('submissions failed', error);
     return res.status(500).json({
       ok: false,
       error: error instanceof Error ? error.message : 'Internal server error'
