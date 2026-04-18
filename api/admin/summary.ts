@@ -1,12 +1,29 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { buildAdminSummary } from '../../lib/score';
-import type { SubmissionRecord } from '../../lib/types';
-import { sql } from '../../lib/db';
+import crypto from 'node:crypto';
+import { calculateSummary } from '../lib/score';
+import { answersToVector } from '../lib/embed';
+import { getSql } from '../lib/db';
+import type { SubmissionPayload } from '../lib/types';
 
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Method not allowed' });
+  }
+
   try {
-    const rows = await sql`
-      select
+    const payload = req.body as SubmissionPayload;
+
+    if (!payload || !payload.profile || !payload.answers || !payload.submittedAt) {
+      return res.status(400).json({ ok: false, error: 'Invalid payload' });
+    }
+
+    const sql = getSql();
+    const id = crypto.randomUUID();
+    const summary = calculateSummary(payload.answers);
+    const vector = answersToVector(payload.answers);
+
+    await sql`
+      insert into submissions (
         id,
         submitted_at,
         locale,
@@ -14,31 +31,34 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
         profile_company,
         profile_title,
         profile_email,
+        profile_country,
+        profile_industry,
+        answers,
         summary
-      from submissions
-      order by submitted_at desc
+      ) values (
+        ${id},
+        ${payload.submittedAt},
+        ${payload.locale},
+        ${payload.profile.name ?? ''},
+        ${payload.profile.company ?? ''},
+        ${payload.profile.title ?? ''},
+        ${payload.profile.email ?? ''},
+        ${payload.profile.country ?? ''},
+        ${payload.profile.industry ?? ''},
+        ${JSON.stringify(payload.answers)},
+        ${JSON.stringify(summary)}
+      )
     `;
 
-    const records: SubmissionRecord[] = rows.map((row: any) => ({
-      id: row.id,
-      submittedAt: new Date(row.submitted_at).toISOString(),
-      locale: row.locale,
-profile: {
-  name: row.profile_name,
-  company: row.profile_company,
-  title: row.profile_title,
-  email: row.profile_email,
-  country: row.profile_country,
-  industry: row.profile_industry
-},
-      answers: {},
-      summary: row.summary
-    }));
-
-    const summary = buildAdminSummary(records);
-    return res.status(200).json(summary);
+    return res.status(200).json({
+      ok: true,
+      id,
+      summary,
+      vectorLength: vector.length,
+      db: 'inserted'
+    });
   } catch (error) {
-    console.error('GET /api/admin/summary failed', error);
+    console.error('POST /api/submissions failed', error);
     return res.status(500).json({
       ok: false,
       error: error instanceof Error ? error.message : 'Internal server error'
