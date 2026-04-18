@@ -1,13 +1,27 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { buildAdminSummary } from '../../server/src/score.js';
 
-// Temporary in-memory fallback.
-// Replace with real DB reads in production.
-const records: any[] = [];
+type SubmissionRecord = {
+  id: string;
+  submittedAt: string;
+  summary: {
+    overall: number;
+    byCategory: {
+      timeHorizon: number;
+      valueDefinition: number;
+      sourceOfTruth: number;
+      investmentLogic: number;
+      researchEvidence: number;
+      orgAlignment: number;
+    };
+  };
+};
 
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+const records: SubmissionRecord[] = [];
+
+export default function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    const summary = buildAdminSummary(records);
+    const summary = buildAdminSummary(records as any);
     return res.status(200).json(summary);
   } catch (error) {
     console.error('GET /api/admin/summary failed', error);
