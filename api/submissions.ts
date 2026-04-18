@@ -12,7 +12,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const payload = req.body as SubmissionPayload;
-
+console.log('entered handler');
+console.log('validated payload');
+console.log('calculated summary');
+console.log('created vector');
+console.log('before pinecone upsert');
+console.log('after pinecone upsert');
     if (!payload || !payload.profile || !payload.answers || !payload.submittedAt) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
