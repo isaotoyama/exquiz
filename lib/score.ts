@@ -1,7 +1,16 @@
 import { questionCategoryMap } from './questions';
-import { AnswerMap, QuestionCategory, ScoreSummary, SubmissionRecord } from './types';
+import type {
+  AnswerMap,
+  QuestionCategory,
+  ScoreSummary,
+  SubmissionRecord
+} from './types';
 
 export function calculateSummary(answers: AnswerMap): ScoreSummary {
+  if (!questionCategoryMap) {
+    throw new Error('questionCategoryMap is undefined');
+  }
+
   const buckets: Record<QuestionCategory, number[]> = {
     timeHorizon: [],
     valueDefinition: [],
@@ -13,15 +22,24 @@ export function calculateSummary(answers: AnswerMap): ScoreSummary {
 
   Object.entries(answers).forEach(([id, value]) => {
     const category = questionCategoryMap[id];
-    if (category) buckets[category].push(value);
+    if (category) {
+      buckets[category].push(value);
+    }
   });
 
   const byCategory = Object.fromEntries(
-    Object.entries(buckets).map(([key, values]) => [key, values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0])
+    Object.entries(buckets).map(([key, values]) => [
+      key,
+      values.length
+        ? values.reduce((sum, current) => sum + current, 0) / values.length
+        : 0
+    ])
   ) as Record<QuestionCategory, number>;
 
   const values = Object.values(answers);
-  const overall = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+  const overall = values.length
+    ? values.reduce((sum, current) => sum + current, 0) / values.length
+    : 0;
 
   let orientation = {
     en: 'Balanced but still operationally mixed.',
@@ -45,38 +63,62 @@ export function calculateSummary(answers: AnswerMap): ScoreSummary {
     };
   }
 
-  return { overall, byCategory, orientation };
+  return {
+    overall,
+    byCategory,
+    orientation
+  };
 }
 
 export function buildAdminSummary(records: SubmissionRecord[]) {
   const totalResponses = records.length;
+
   const averageOverall = totalResponses
     ? records.reduce((sum, item) => sum + item.summary.overall, 0) / totalResponses
     : 0;
 
-  const categories: QuestionCategory[] = ['timeHorizon', 'valueDefinition', 'sourceOfTruth', 'investmentLogic', 'researchEvidence', 'orgAlignment'];
+  const categories: QuestionCategory[] = [
+    'timeHorizon',
+    'valueDefinition',
+    'sourceOfTruth',
+    'investmentLogic',
+    'researchEvidence',
+    'orgAlignment'
+  ];
+
   const categoryAverages = Object.fromEntries(
     categories.map((category) => [
       category,
-      totalResponses ? records.reduce((sum, item) => sum + item.summary.byCategory[category], 0) / totalResponses : 0
+      totalResponses
+        ? records.reduce(
+            (sum, item) => sum + item.summary.byCategory[category],
+            0
+          ) / totalResponses
+        : 0
     ])
   ) as Record<QuestionCategory, number>;
 
   const clusterSummary = [
-    { label: 'Short-term dominant', filter: (s: number) => s < 2.5 },
-    { label: 'Mixed model', filter: (s: number) => s >= 2.5 && s < 3.5 },
-    { label: 'Emerging strategy', filter: (s: number) => s >= 3.5 && s < 4.2 },
-    { label: 'Leadership-level maturity', filter: (s: number) => s >= 4.2 }
+    { label: 'Short-term dominant', filter: (score: number) => score < 2.5 },
+    { label: 'Mixed model', filter: (score: number) => score >= 2.5 && score < 3.5 },
+    { label: 'Emerging strategy', filter: (score: number) => score >= 3.5 && score < 4.2 },
+    { label: 'Leadership-level maturity', filter: (score: number) => score >= 4.2 }
   ].map((group) => {
     const items = records.filter((item) => group.filter(item.summary.overall));
+
     return {
       label: group.label,
       count: items.length,
-      average: items.length ? items.reduce((sum, item) => sum + item.summary.overall, 0) / items.length : 0
+      average: items.length
+        ? items.reduce((sum, item) => sum + item.summary.overall, 0) / items.length
+        : 0
     };
   });
 
-  const orientationBreakdown = clusterSummary.map(({ label, count }) => ({ label, count }));
+  const orientationBreakdown = clusterSummary.map(({ label, count }) => ({
+    label,
+    count
+  }));
 
   return {
     totalResponses,
@@ -84,6 +126,8 @@ export function buildAdminSummary(records: SubmissionRecord[]) {
     categoryAverages,
     orientationBreakdown,
     clusterSummary,
-    recentSubmissions: [...records].sort((a, b) => Date.parse(b.submittedAt) - Date.parse(a.submittedAt)).slice(0, 12)
+    recentSubmissions: [...records]
+      .sort((a, b) => Date.parse(b.submittedAt) - Date.parse(a.submittedAt))
+      .slice(0, 12)
   };
 }

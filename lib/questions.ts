@@ -1,52 +1,48 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import crypto from 'node:crypto';
-import { calculateSummary } from '../lib/score';
-import { answersToVector } from '../lib/embed';
-import { upsertVector } from '../lib/pinecone';
-import type { SubmissionPayload } from '../lib/types';
+import type { QuestionCategory } from './types';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'Method not allowed' });
-  }
+export const orderedQuestionIds = [
+  'q1',
+  'q2',
+  'q3',
+  'q4',
+  'q5',
+  'q6',
+  'q7',
+  'q8',
+  'q9',
+  'q10',
+  'q11',
+  'q12',
+  'q13',
+  'q14',
+  'q15',
+  'q16',
+  'q17',
+  'q18'
+] as const;
 
-  try {
-    const payload = req.body as SubmissionPayload;
+export const questionCategoryMap: Record<string, QuestionCategory> = {
+  q1: 'timeHorizon',
+  q2: 'timeHorizon',
+  q3: 'timeHorizon',
 
-    if (!payload || !payload.profile || !payload.answers || !payload.submittedAt) {
-      return res.status(400).json({ ok: false, error: 'Invalid payload' });
-    }
+  q4: 'valueDefinition',
+  q5: 'valueDefinition',
+  q6: 'valueDefinition',
 
-    const id = crypto.randomUUID();
-    const summary = calculateSummary(payload.answers);
-    const vector = answersToVector(payload.answers);
+  q7: 'sourceOfTruth',
+  q8: 'sourceOfTruth',
+  q9: 'sourceOfTruth',
 
-    await upsertVector({
-      id,
-      values: vector,
-      metadata: {
-        name: payload.profile.name ?? '',
-        company: payload.profile.company ?? '',
-        title: payload.profile.title ?? '',
-        email: payload.profile.email ?? '',
-        locale: payload.locale ?? 'en',
-        submittedAt: payload.submittedAt,
-        overall: summary.overall,
-        timeHorizon: summary.byCategory.timeHorizon,
-        valueDefinition: summary.byCategory.valueDefinition,
-        sourceOfTruth: summary.byCategory.sourceOfTruth,
-        investmentLogic: summary.byCategory.investmentLogic,
-        researchEvidence: summary.byCategory.researchEvidence,
-        orgAlignment: summary.byCategory.orgAlignment
-      }
-    });
+  q10: 'investmentLogic',
+  q11: 'investmentLogic',
+  q12: 'investmentLogic',
 
-    return res.status(200).json({ ok: true, id, summary });
-  } catch (error) {
-    console.error('POST /api/submissions failed', error);
-    return res.status(500).json({
-      ok: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
-    });
-  }
-}
+  q13: 'researchEvidence',
+  q14: 'researchEvidence',
+  q15: 'researchEvidence',
+
+  q16: 'orgAlignment',
+  q17: 'orgAlignment',
+  q18: 'orgAlignment'
+};
