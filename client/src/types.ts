@@ -8,13 +8,6 @@ export type QuestionCategory =
   | 'researchEvidence'
   | 'orgAlignment';
 
-export interface Question {
-  id: string;
-  category: QuestionCategory;
-  theory: Record<Locale, string>;
-  prompt: Record<Locale, string>;
-}
-
 export interface RespondentProfile {
   name: string;
   company: string;
@@ -34,12 +27,10 @@ export interface SubmissionPayload {
 export interface ScoreSummary {
   overall: number;
   byCategory: Record<QuestionCategory, number>;
-  orientation: Record<Locale, string>;
-}
-
-export interface SubmissionRecord extends SubmissionPayload {
-  id: string;
-  summary: ScoreSummary;
+  orientation: {
+    en: string;
+    ja: string;
+  };
 }
 
 export interface SimilarMatch {
@@ -48,11 +39,25 @@ export interface SimilarMatch {
   metadata?: Record<string, unknown>;
 }
 
+export interface AdminClusterSummary {
+  label: string;
+  count: number;
+  average: number;
+}
+
+export interface SubmissionRecord {
+  id: string;
+  submittedAt: string;
+  profile: RespondentProfile;
+  locale: Locale;
+  summary: ScoreSummary;
+}
+
 export interface AdminSummary {
   totalResponses: number;
   averageOverall: number;
   categoryAverages: Record<QuestionCategory, number>;
-  orientationBreakdown: Array<{ label: string; count: number }>;
-  clusterSummary: Array<{ label: string; count: number; average: number }>;
+  orientationBreakdown: { label: string; count: number }[];
+  clusterSummary: AdminClusterSummary[];
   recentSubmissions: SubmissionRecord[];
 }

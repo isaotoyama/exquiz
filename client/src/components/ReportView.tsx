@@ -1,24 +1,49 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Locale, QuestionCategory, ScoreSummary, SimilarMatch } from '../types';
+import { questions } from '../questions';
 import { ui } from '../i18n';
-import { getCategoryLabel } from '../categoryLabels';
+import { getCategoryLabel, getCategorySummary } from '../categoryLabels';
+import { AnswerMap, Locale, QuestionCategory, ScoreSummary } from '../types';
 
 type Props = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   reportData: {
     summary: ScoreSummary;
-    similar: SimilarMatch[];
+    answers: AnswerMap;
   } | null;
 };
 
 function getThemeMessage(summary: ScoreSummary, locale: Locale) {
   const text = ui[locale].reportThemes;
-
   if (summary.overall >= 4) return text.longTerm;
   if (summary.overall < 2.5) return text.shortTerm;
   return text.balanced;
+}
+
+function RadarBars({
+  locale,
+  byCategory
+}: {
+  locale: Locale;
+  byCategory: Record<QuestionCategory, number>;
+}) {
+  const entries = Object.entries(byCategory) as [QuestionCategory, number][];
+
+  return (
+    <div className="grid">
+      {entries.map(([key, value]) => (
+        <div key={key} className="metric">
+          <div className="small">{getCategoryLabel(key, locale)}</div>
+          <div className="bar-wrap">
+            <div className="bar-fill" style={{ width: `${(value / 5) * 100}%` }} />
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 700 }}>{value.toFixed(2)}</div>
+          <div className="small">{getCategorySummary(key, locale)}</div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export function ReportView({ locale, setLocale, reportData }: Props) {
@@ -37,9 +62,7 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
     );
   }
 
-  const { summary, similar } = reportData;
-
-  const entries = Object.entries(summary.byCategory) as [QuestionCategory, number][];
+  const { summary, answers } = reportData;
 
   return (
     <div className="grid">
@@ -71,32 +94,22 @@ export function ReportView({ locale, setLocale, reportData }: Props) {
 
       <div className="card">
         <h2>{text.radarTitle}</h2>
-        <div className="grid">
-          {entries.map(([key, value]) => (
-            <div key={key} className="metric">
-              <div className="small">{getCategoryLabel(key, locale)}</div>
-              <div style={{ fontSize: 28, fontWeight: 700 }}>{value.toFixed(2)}</div>
-            </div>
-          ))}
-        </div>
+        <RadarBars locale={locale} byCategory={summary.byCategory} />
       </div>
 
       <div className="card">
-        <h2>{text.similar}</h2>
+        <h2>{text.questionInterpretation}</h2>
         <div className="grid">
-          {similar.length === 0 ? (
-            <div className="small">No matches yet.</div>
-          ) : (
-            similar.map((match) => (
-              <div className="metric" key={match.id}>
-                <div style={{ fontWeight: 700 }}>{match.id}</div>
-                <div className="small">score: {match.score.toFixed(3)}</div>
-                {typeof match.metadata?.company === 'string' && (
-                  <div className="small">{match.metadata.company}</div>
-                )}
+          {questions.map((q) => (
+            <div key={q.id} className="metric">
+              <div className="small">{getCategoryLabel(q.category, locale)}</div>
+              <h3 style={{ marginTop: 8 }}>{q.prompt[locale]}</h3>
+              <div className="small" style={{ marginBottom: 8 }}>
+                {text.answerLabel}: {answers[q.id] ?? '-'}
               </div>
-            ))
-          )}
+              <p className="small">{q.theory[locale]}</p>
+            </div>
+          ))}
         </div>
       </div>
 

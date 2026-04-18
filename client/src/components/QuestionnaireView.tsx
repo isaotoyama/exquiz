@@ -2,15 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { questions } from '../questions';
 import { ui } from '../i18n';
+import { getCategoryLabel } from '../categoryLabels';
 import {
   AnswerMap,
   Locale,
   RespondentProfile,
   ScoreSummary,
-  SimilarMatch,
   SubmissionPayload
 } from '../types';
-import { getCategoryLabel } from '../categoryLabels';
 
 const defaultProfile: RespondentProfile = {
   name: '',
@@ -24,7 +23,7 @@ const scale = [1, 2, 3, 4, 5];
 type Props = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  onSubmitted: (data: { summary: ScoreSummary; similar: SimilarMatch[] }) => void;
+  onSubmitted: (data: { summary: ScoreSummary; answers: AnswerMap }) => void;
 };
 
 export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
@@ -63,22 +62,9 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
 
       const saveData = await saveRes.json();
 
-      const simRes = await fetch('/api/search-similar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!simRes.ok) {
-        const text = await simRes.text();
-        throw new Error(`Similarity search failed: ${simRes.status} ${text}`);
-      }
-
-      const simData = await simRes.json();
-
       onSubmitted({
         summary: saveData.summary,
-        similar: simData.matches ?? []
+        answers
       });
 
       navigate('/report');
@@ -138,6 +124,7 @@ export function QuestionnaireView({ locale, setLocale, onSubmitted }: Props) {
           </div>
           <h3>{q.prompt[locale]}</h3>
           <p className="small">{q.theory[locale]}</p>
+
           <div className="question-scale">
             <span className="small">1</span>
             <div className="bubbles">
