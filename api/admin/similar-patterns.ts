@@ -1,15 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { buildAdminSummary } from '../../lib/score';
-import type { SubmissionRecord } from '../../lib/types';
-
-const records: SubmissionRecord[] = [];
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
-    const summary = buildAdminSummary(records);
-    return res.status(200).json(summary);
+    return res.status(200).json({
+      matches: []
+    });
   } catch (error) {
-    console.error('GET /api/admin/summary failed', error);
+    console.error('GET /api/admin/similar-patterns failed', error);
     return res.status(500).json({
       ok: false,
       error: error instanceof Error ? error.message : 'Internal server error'
