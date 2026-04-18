@@ -17,7 +17,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const vector = answersToVector(payload.answers);
     const matches = await querySimilar(vector);
 
-    return res.status(200).json({ ok: true, matches });
+    return res.status(200).json({
+      ok: true,
+      matches
+    });
   } catch (error) {
     console.error('POST /api/search-similar failed', error);
     return res.status(500).json({

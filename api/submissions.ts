@@ -12,12 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const payload = req.body as SubmissionPayload;
-console.log('entered handler');
-console.log('validated payload');
-console.log('calculated summary');
-console.log('created vector');
-console.log('before pinecone upsert');
-console.log('after pinecone upsert');
+
     if (!payload || !payload.profile || !payload.answers || !payload.submittedAt) {
       return res.status(400).json({ ok: false, error: 'Invalid payload' });
     }
@@ -26,27 +21,40 @@ console.log('after pinecone upsert');
     const summary = calculateSummary(payload.answers);
     const vector = answersToVector(payload.answers);
 
+    const metadata = {
+      name: payload.profile.name ?? '',
+      company: payload.profile.company ?? '',
+      title: payload.profile.title ?? '',
+      email: payload.profile.email ?? '',
+      locale: payload.locale ?? 'en',
+      submittedAt: payload.submittedAt,
+      overall: summary.overall,
+      timeHorizon: summary.byCategory.timeHorizon,
+      valueDefinition: summary.byCategory.valueDefinition,
+      sourceOfTruth: summary.byCategory.sourceOfTruth,
+      investmentLogic: summary.byCategory.investmentLogic,
+      researchEvidence: summary.byCategory.researchEvidence,
+      orgAlignment: summary.byCategory.orgAlignment
+    };
+
+    console.log('upsert payload', {
+      id,
+      vectorLength: vector.length,
+      firstThree: vector.slice(0, 3),
+      metadataKeys: Object.keys(metadata)
+    });
+
     await upsertVector({
       id,
       values: vector,
-      metadata: {
-        name: payload.profile.name ?? '',
-        company: payload.profile.company ?? '',
-        title: payload.profile.title ?? '',
-        email: payload.profile.email ?? '',
-        locale: payload.locale ?? 'en',
-        submittedAt: payload.submittedAt,
-        overall: summary.overall,
-        timeHorizon: summary.byCategory.timeHorizon,
-        valueDefinition: summary.byCategory.valueDefinition,
-        sourceOfTruth: summary.byCategory.sourceOfTruth,
-        investmentLogic: summary.byCategory.investmentLogic,
-        researchEvidence: summary.byCategory.researchEvidence,
-        orgAlignment: summary.byCategory.orgAlignment
-      }
+      metadata
     });
 
-    return res.status(200).json({ ok: true, id, summary });
+    return res.status(200).json({
+      ok: true,
+      id,
+      summary
+    });
   } catch (error) {
     console.error('POST /api/submissions failed', error);
     return res.status(500).json({

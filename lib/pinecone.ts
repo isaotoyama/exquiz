@@ -1,6 +1,7 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 
 type MetadataValue = string | number | boolean;
+
 type VectorRecord = {
   id: string;
   values: number[];
@@ -24,15 +25,36 @@ function getIndex() {
 
 export async function upsertVector(record: VectorRecord) {
   const { index, namespace } = getIndex();
-  await index.namespace(namespace).upsert([record]);
+
+  if (!record) {
+    throw new Error('record is undefined');
+  }
+
+  if (!record.id) {
+    throw new Error('record.id is missing');
+  }
+
+  if (!Array.isArray(record.values) || record.values.length === 0) {
+    throw new Error('record.values is empty');
+  }
+
+  await index.namespace(namespace).upsert({
+    vectors: [record]
+  });
 }
 
 export async function querySimilar(vector: number[]) {
   const { index, namespace } = getIndex();
+
+  if (!Array.isArray(vector) || vector.length === 0) {
+    throw new Error('query vector is empty');
+  }
+
   const result = await index.namespace(namespace).query({
     vector,
     topK: 5,
     includeMetadata: true
   });
+
   return result.matches ?? [];
 }
