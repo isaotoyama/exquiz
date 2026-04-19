@@ -358,7 +358,83 @@ button:focus-visible {
   gap: 10px;
   flex-wrap: wrap;
 }
+.stepper {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
 
+.step-pill {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: #5b6472;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.step-pill.active {
+  background: #1d4ed8;
+  color: white;
+}
+
+.page-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.slider-card {
+  display: grid;
+  gap: 14px;
+  padding-top: 10px;
+}
+
+.slider-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+  color: #5b6472;
+}
+
+.range-slider {
+  width: 100%;
+  accent-color: #1d4ed8;
+}
+
+.slider-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.slider-dot {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid #cdd5e1;
+  background: white;
+  font-weight: 700;
+}
+
+.slider-dot.active {
+  background: #1d4ed8;
+  color: white;
+  border-color: #1d4ed8;
+}
+
+select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: white;
+  color: var(--text);
+}
 @media (max-width: 800px) {
   .grid-2,
   .form-grid {

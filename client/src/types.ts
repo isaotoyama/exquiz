@@ -19,6 +19,16 @@ export interface Question {
     en: string;
     ja: string;
   };
+  anchors: {
+    left: {
+      en: string;
+      ja: string;
+    };
+    right: {
+      en: string;
+      ja: string;
+    };
+  };
 }
 
 export interface RespondentProfile {
